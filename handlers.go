@@ -27,6 +27,7 @@ func HandleEditUser(u *Users) grouter.HandlerFunc {
 			grouter.DisplayInternalServerError(w)
 		}
 
+		w.WriteHeader(http.StatusOK)
 		ok2 := u.EditUser(param2, &UserEditConf)
 		if !ok2 {
 			grouter.DisplayInternalServerError(w)
