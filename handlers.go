@@ -10,16 +10,40 @@ import (
 	"github.com/72sevenzy2/grouter/grouter"
 )
 
-func HandleCreateUser(users *Users) grouter.HandlerFunc {
+func HandleEditUser(u *Users) grouter.HandlerFunc {
+	return func(w http.ResponseWriter, r *grouter.Request) {
+		param, ok := r.Get("id")
+		if !ok {
+			grouter.DisplayInternalServerError(w)
+		}
+		param2, err := strconv.Atoi(param)
+		if err != nil {
+			grouter.DisplayInternalServerError(w)
+		}
+
+		var UserEditConf EditUserConfig
+		limitedReader := io.LimitReader(r.Body, 1024*1023) // 1 MiB
+		if err := json.NewDecoder(limitedReader).Decode(&UserEditConf); err != nil {
+			grouter.DisplayInternalServerError(w)
+		}
+
+		ok2 := u.EditUser(param2, &UserEditConf)
+		if !ok2 {
+			grouter.DisplayInternalServerError(w)
+		}
+	}
+}
+
+func HandleCreateUser(u *Users) grouter.HandlerFunc {
 	return func(w http.ResponseWriter, r *grouter.Request) {
 		limitedReader := io.LimitReader(r.Body, 1024*1024) // 1 MiB
-		var u User
+		var user User
 		if err := json.NewDecoder(limitedReader).Decode(&u); err != nil {
 			grouter.DisplayInternalServerError(w)
 		}
 
 		w.WriteHeader(http.StatusCreated)
-		users.AddUser(u.Username, u.ID, u.Followers, u.Following)
+		u.AddUser(user.Username, user.ID, user.Followers, user.Following)
 	}
 }
 
