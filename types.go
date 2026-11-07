@@ -1,7 +1,7 @@
 package main
 
 type User struct {
-	ID        string
+	ID        int
 	Username  string
 	Followers int
 	Following int
@@ -17,16 +17,16 @@ func NewUsers() *Users {
 	}
 }
 
-func (u Users) GetName(ID string) (bool, string) {
+func (u Users) GetName(ID int) (string, bool) {
 	for v := range u.UsersDB {
 		if u.UsersDB[v].ID == ID {
-			return true, u.UsersDB[v].Username
+			return u.UsersDB[v].Username, true
 		}
 	}
-	return false, ""
+	return "", false
 }
 
-func (u *Users) AddUser(name, ID string, followers, following int) *User {
+func (u *Users) AddUser(name string, ID, followers, following int) *User {
 	user := User{
 		ID:        ID,
 		Username:  name,

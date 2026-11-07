@@ -12,6 +12,7 @@ import (
 
 func main() {
 	r := grouter.NewGrouter()
+
 	r.Use(grouter.Recoverer())
 	lim := grouter.NewLimiter(20, 1)
 	r.Use(lim.RateLimiter()) // global rate limiting
@@ -32,6 +33,8 @@ func main() {
 		slog.Info("POST_REQUEST", "CREATE_USER", "USER", user)
 
 	}, grouter.Timeout(time.Second*5)) // 5 second safe-gaurd
+
+	r.Get("api/users/getuser/:id", HandleGetUsername(users))
 
 	http.ListenAndServe(":9000", r)
 }
