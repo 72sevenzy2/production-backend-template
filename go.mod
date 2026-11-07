@@ -1,6 +1,6 @@
 module github.com/72sevenzy2/production-backend-template
 
-go 1.25.5
+go 1.27.3
 
 require github.com/72sevenzy2/grouter v0.0.0-20261106150728-db49214d0989
 
