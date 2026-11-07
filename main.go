@@ -38,5 +38,16 @@ func main() {
 		grouter.BearerAuth(secretToken2),
 		grouter.Logger(0))
 
-	http.ListenAndServe(":9000", r)
+	srv := &http.Server{
+		Addr:              ":9000",
+		IdleTimeout:       60 * time.Second,
+		Handler:           r,
+		ReadHeaderTimeout: 5 * time.Second,
+		ReadTimeout:       10 * time.Second,
+		WriteTimeout:      15 * time.Second,
+	}
+
+	if err := srv.ListenAndServe(); err != nil {
+		panic(err)
+	}
 }
