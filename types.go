@@ -1,5 +1,9 @@
 package main
 
+import (
+	"sync"
+)
+
 type User struct {
 	ID        int
 	Username  string
@@ -8,6 +12,7 @@ type User struct {
 }
 
 type Users struct {
+	mu      sync.RWMutex
 	UsersDB []User
 }
 
@@ -17,7 +22,9 @@ func NewUsers() *Users {
 	}
 }
 
-func (u Users) GetName(ID int) (string, bool) {
+func (u *Users) GetName(ID int) (string, bool) {
+	u.mu.RLock()
+	defer u.mu.RUnlock()
 	for v := range u.UsersDB {
 		if u.UsersDB[v].ID == ID {
 			return u.UsersDB[v].Username, true
@@ -33,6 +40,7 @@ func (u *Users) DeleteUser(ID int) {
 				u.UsersDB[:v],
 				u.UsersDB[v+1:]...,
 			)
+			return
 		}
 	}
 }
@@ -44,6 +52,8 @@ type EditUserConfig struct {
 }
 
 func (u *Users) EditUser(ID int, conf *EditUserConfig) bool {
+	u.mu.Lock()
+	defer u.mu.Unlock()
 	for v := range u.UsersDB {
 		if u.UsersDB[v].ID == ID {
 			u.UsersDB[v] = User{
@@ -59,7 +69,9 @@ func (u *Users) EditUser(ID int, conf *EditUserConfig) bool {
 	return false
 }
 
-func (u *Users) AddUser(name string, ID, followers, following int) *User {
+func (u *Users) AddUser(name string, ID, followers, following int) bool {
+	u.mu.Lock()
+	defer u.mu.Unlock()
 	user := User{
 		ID:        ID,
 		Username:  name,
@@ -69,5 +81,5 @@ func (u *Users) AddUser(name string, ID, followers, following int) *User {
 
 	u.UsersDB = append(u.UsersDB, user)
 
-	return &user
+	return true
 }
