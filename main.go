@@ -11,8 +11,8 @@ func main() {
 	r := grouter.NewGrouter()
 
 	r.Use(grouter.Recoverer())
-	lim := grouter.NewLimiter(20, 1)
-	r.Use(lim.RateLimiter())                 // global rate limiting
+	globalLimiter := grouter.NewLimiter(20, 1)
+	r.Use(globalLimiter.RateLimiter())       // global rate limiting
 	r.Use(grouter.Timeout(time.Second * 10)) // global 10 second timeout.
 
 	r.Get("health", func(w http.ResponseWriter, r *grouter.Request) {
