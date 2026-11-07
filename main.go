@@ -21,11 +21,12 @@ func main() {
 
 	// API
 	users := NewUsers()
+	cache := NewCache[string]()
 	r.Post("api/users/createuser",
 		HandleCreateUser(users),
 		grouter.Timeout(time.Second*5), grouter.Logger(0)) // 5 second safe-gaurd and logger.
 
-	r.Get("api/users/getuser/:id", HandleGetUsername(users), grouter.Logger(0))
+	r.Get("api/users/getuser/:id", HandleGetUsername(users, cache), grouter.Logger(0))
 
 	secretToken := "abcdefg" // super secret bearer auth token
 	r.Del("api/users/deleteuser/:id",

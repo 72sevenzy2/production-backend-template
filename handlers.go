@@ -39,7 +39,7 @@ func HandleCreateUser(u *Users) grouter.HandlerFunc {
 	return func(w http.ResponseWriter, r *grouter.Request) {
 		limitedReader := io.LimitReader(r.Body, 1024*1024) // 1 MiB
 		var user User
-		if err := json.NewDecoder(limitedReader).Decode(&u); err != nil {
+		if err := json.NewDecoder(limitedReader).Decode(&user); err != nil {
 			grouter.DisplayInternalServerError(w)
 		}
 
@@ -48,8 +48,7 @@ func HandleCreateUser(u *Users) grouter.HandlerFunc {
 	}
 }
 
-func HandleGetUsername(u *Users) grouter.HandlerFunc {
-	time.Sleep(time.Second * 1) // simulating a heavy db query
+func HandleGetUsername(u *Users, cache *Cache[string]) grouter.HandlerFunc {
 	return func(w http.ResponseWriter, r *grouter.Request) {
 		param, ok := r.Get("id")
 		if !ok {
@@ -59,12 +58,20 @@ func HandleGetUsername(u *Users) grouter.HandlerFunc {
 		if err != nil {
 			grouter.DisplayInternalServerError(w)
 		}
-
-		val, ok := u.GetName(param2)
+		val, ok := cache.Get(param)
+		// todo: fix cache stampede
+		if !ok {
+			time.Sleep(time.Second * 5) // simulating heavy db query
+			val, ok := u.GetName(param2)
+			if !ok {
+				grouter.DisplayInternalServerError(w)
+			}
+			cache.Put(param, val)
+		}
 
 		w.WriteHeader(http.StatusOK)
 		if err := json.NewEncoder(w).Encode(val); err != nil {
-			grouter.DisplayInternalServerError(w)
+			return
 		}
 	}
 }

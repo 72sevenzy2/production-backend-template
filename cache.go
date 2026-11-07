@@ -32,6 +32,7 @@ func (c *Cache[T]) Put(k string, v T) bool {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
+	// todo: add lru eviction
 	if len(c.Store) >= 10 {
 		return false
 	}
