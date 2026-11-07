@@ -17,11 +17,15 @@ func NewCache[T any]() *Cache[T] {
 	}
 }
 
-func (c *Cache[T]) Get(k string) T {
+func (c *Cache[T]) Get(k string) (T, bool) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
+	if _, ok := c.Store[k]; !ok {
+		var zero T
+		return zero, false
+	}
 
-	return c.Store[k]
+	return c.Store[k], true
 }
 
 func (c *Cache[T]) Put(k string, v T) bool {
