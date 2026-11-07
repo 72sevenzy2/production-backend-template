@@ -26,6 +26,17 @@ func (u Users) GetName(ID int) (string, bool) {
 	return "", false
 }
 
+func (u *Users) DeleteUser(ID int) {
+	for v := range u.UsersDB {
+		if u.UsersDB[v].ID == ID {
+			u.UsersDB = append(
+				u.UsersDB[:v],
+				u.UsersDB[v+1:]...,
+			)
+		}
+	}
+}
+
 func (u *Users) AddUser(name string, ID, followers, following int) *User {
 	user := User{
 		ID:        ID,
