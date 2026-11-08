@@ -26,7 +26,8 @@ func main() {
 		HandleCreateUser(users),
 		grouter.Timeout(time.Second*5), grouter.Logger(0)) // 5 second safe-gaurd and logger.
 
-	r.Get("api/users/getuser/:id", HandleGetUsername(users, cache), grouter.Logger(0))
+	GetUserRateLimiter := grouter.NewLimiter(50, 1) // allow more requests for read-only route.
+	r.Get("api/users/getuser/:id", HandleGetUsername(users, cache), grouter.Logger(0), GetUserRateLimiter.RateLimiter())
 
 	secretToken := "abcdefg" // super secret bearer auth token
 	r.Del("api/users/deleteuser/:id",
