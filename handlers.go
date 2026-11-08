@@ -5,7 +5,6 @@ import (
 	"io"
 	"net/http"
 	"strconv"
-	"sync"
 	"time"
 
 	"github.com/72sevenzy2/grouter/grouter"
@@ -54,7 +53,7 @@ func HandleCreateUser(u *Users) grouter.HandlerFunc {
 	}
 }
 
-func HandleGetUsername(u *Users, cache *Cache[string], mu *sync.Mutex) grouter.HandlerFunc {
+func HandleGetUsername(u *Users, cache *Cache[string], sf *SingleFlight) grouter.HandlerFunc {
 	return func(w http.ResponseWriter, r *grouter.Request) {
 		param, ok := r.Get("id")
 		if !ok {
@@ -66,29 +65,20 @@ func HandleGetUsername(u *Users, cache *Cache[string], mu *sync.Mutex) grouter.H
 			grouter.DisplayInternalServerError(w)
 			return
 		}
-		val, ok := cache.Get(param)
-
-		mu.Lock()
-		if !ok {
-			val, ok = cache.Get(param)
-			if ok {
-				w.WriteHeader(http.StatusOK)
-				if err := json.NewEncoder(w).Encode(val); err != nil {
-					return
-				}
+		val, err := sf.Do(param, func() (string, error) {
+			if val, ok := cache.Get(param); ok {
+				return val, nil
 			}
 
-			time.Sleep(time.Second * 5) // simulating heavy db query
+			time.Sleep(time.Second * 1) // simulating heavy db query.
 			val, ok := u.GetName(param2)
 			if !ok {
 				grouter.DisplayInternalServerError(w)
-				return
+				return "", ErrNonExistentUser
 			}
 			cache.Put(param, val)
-			mu.Unlock()
-		}
-		mu.Unlock()
-
+			return val, nil
+		})
 		w.WriteHeader(http.StatusOK)
 		if err := json.NewEncoder(w).Encode(val); err != nil {
 			return
