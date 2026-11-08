@@ -2,25 +2,29 @@ package main
 
 import "sync"
 
-type Call struct {
+type ParamType interface {
+	string | int
+}
+
+type Call[T ParamType] struct {
 	wg  sync.WaitGroup
-	val string
+	val T
 	err error
 }
 
-type SingleFlight struct {
+type SingleFlight[T ParamType] struct {
 	mu    sync.Mutex
-	calls map[string]*Call
+	calls map[T]*Call[T]
 }
 
-func NewSingleFlight() *SingleFlight {
-	return &SingleFlight{
-		calls: make(map[string]*Call),
+func NewSingleFlight[T ParamType]() *SingleFlight[T] {
+	return &SingleFlight[T]{
+		calls: make(map[T]*Call[T]),
 	}
 }
 
 // execute-once logic function for cache stampede prevention.
-func (sf *SingleFlight) Do(key string, fn func() (string, error)) (string, error) {
+func (sf *SingleFlight[T]) Do(key T, fn func() (T, error)) (T, error) {
 	sf.mu.Lock()
 
 	if c, ok := sf.calls[key]; ok {
@@ -30,7 +34,7 @@ func (sf *SingleFlight) Do(key string, fn func() (string, error)) (string, error
 		return c.val, c.err
 	}
 
-	c := &Call{}
+	c := &Call[T]{}
 	c.wg.Add(1)
 	sf.calls[key] = c
 

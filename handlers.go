@@ -53,7 +53,7 @@ func HandleCreateUser(u *Users) grouter.HandlerFunc {
 	}
 }
 
-func HandleGetUsername(u *Users, cache *Cache[string], sf *SingleFlight) grouter.HandlerFunc {
+func HandleGetUsername(u *Users, cache *Cache[string], sf *SingleFlight[string]) grouter.HandlerFunc {
 	return func(w http.ResponseWriter, r *grouter.Request) {
 		param, ok := r.Get("id")
 		if !ok {

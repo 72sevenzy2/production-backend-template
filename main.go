@@ -26,7 +26,7 @@ func main() {
 		HandleCreateUser(users),
 		grouter.Timeout(time.Second*5), grouter.Logger(0)) // 5 second safe-gaurd and logger.
 
-	sf := NewSingleFlight()
+	sf := NewSingleFlight[string]()
 	GetUserRateLimiter := grouter.NewLimiter(50, 1) // allow more requests for read-only route.
 	r.Get("api/users/getuser/:id", HandleGetUsername(users, cache, sf), grouter.Logger(0), GetUserRateLimiter.RateLimiter())
 
