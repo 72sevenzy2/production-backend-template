@@ -25,14 +25,16 @@ func NewCache[T any]() *Cache[T] {
 
 func (c *Cache[T]) Get(k string) (T, bool) {
 	c.mu.RLock()
-	if _, ok := c.Store[k]; !ok {
+	entry, ok := c.Store[k]
+	if !ok {
+		c.mu.RUnlock()
 		var zero T
 		return zero, false
 	}
 	c.mu.RUnlock()
 
-	c.Store[k].Hits.Add(1)
-	return c.Store[k].Value, true
+	entry.Hits.Add(1)
+	return entry.Value, true
 }
 
 func (c *Cache[T]) Put(k string, v T) bool {
