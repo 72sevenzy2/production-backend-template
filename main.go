@@ -21,7 +21,7 @@ func main() {
 
 	// API
 	users := NewUsers()
-	cache := NewCache[string]()
+	cache := NewCache[string](users)
 	r.Post("api/users/createuser",
 		HandleCreateUser(users),
 		grouter.Timeout(time.Second*5), grouter.Logger(0)) // 5 second safe-gaurd and logger.
