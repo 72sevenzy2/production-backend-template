@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"strconv"
@@ -14,7 +15,13 @@ func HandleEditUser(u *Users) grouter.HandlerFunc {
 	return func(w http.ResponseWriter, r *grouter.Request) {
 		param, ok := r.Get("id")
 		if !ok {
-			grouter.DisplayInternalServerError(w)
+			grouter.DisplayStatus(w, grouter.DisplayStatusConfig{
+				Code:       http.StatusFailedDependency,
+				Title:      fmt.Sprintf("status %d", http.StatusFailedDependency),
+				Heading:    fmt.Sprintf("status %d", http.StatusFailedDependency),
+				Descripion: "Sorry, your request failed as an route parameter was not found, please try again.",
+			})
+
 			return
 		}
 		param2, err := strconv.Atoi(param)
@@ -33,7 +40,13 @@ func HandleEditUser(u *Users) grouter.HandlerFunc {
 		w.WriteHeader(http.StatusOK)
 		ok2 := u.EditUser(param2, &UserEditConf)
 		if !ok2 {
-			grouter.DisplayInternalServerError(w)
+			grouter.DisplayStatus(w, grouter.DisplayStatusConfig{
+				Code:       http.StatusFailedDependency,
+				Title:      fmt.Sprintf("status %d", http.StatusFailedDependency),
+				Heading:    fmt.Sprintf("status %d", http.StatusFailedDependency),
+				Descripion: "Sorry, your request failed as the user you were looking to edit for was not found.",
+			})
+
 			return
 		}
 	}
@@ -57,7 +70,12 @@ func HandleGetUsername(u *Users, cache *Cache[string], sf *SingleFlight[string])
 	return func(w http.ResponseWriter, r *grouter.Request) {
 		param, ok := r.Get("id")
 		if !ok {
-			grouter.DisplayInternalServerError(w)
+			grouter.DisplayStatus(w, grouter.DisplayStatusConfig{
+				Code:       http.StatusFailedDependency,
+				Title:      fmt.Sprintf("status %d", http.StatusFailedDependency),
+				Heading:    fmt.Sprintf("status %d", http.StatusFailedDependency),
+				Descripion: "Sorry, your request failed as an route parameter was not found, please try again.",
+			})
 			return
 		}
 		param2, err := strconv.Atoi(param)
@@ -73,7 +91,12 @@ func HandleGetUsername(u *Users, cache *Cache[string], sf *SingleFlight[string])
 			time.Sleep(time.Second * 1) // simulating heavy db query.
 			val, ok := u.GetName(param2)
 			if !ok {
-				grouter.DisplayInternalServerError(w)
+				grouter.DisplayStatus(w, grouter.DisplayStatusConfig{
+					Code:       http.StatusFailedDependency,
+					Title:      fmt.Sprintf("status %d", http.StatusFailedDependency),
+					Heading:    fmt.Sprintf("status %d", http.StatusFailedDependency),
+					Descripion: "Sorry, your request failed as the user id you were looking for was not found.",
+				})
 				return "", ErrNonExistentUser
 			}
 			cache.Put(param, val)
@@ -90,7 +113,13 @@ func HandleDeleteUser(u *Users) grouter.HandlerFunc {
 	return func(w http.ResponseWriter, r *grouter.Request) {
 		param, ok := r.Get("id")
 		if !ok {
-			grouter.DisplayInternalServerError(w)
+			grouter.DisplayStatus(w, grouter.DisplayStatusConfig{
+				Code:       http.StatusFailedDependency,
+				Title:      fmt.Sprintf("status %d", http.StatusFailedDependency),
+				Heading:    fmt.Sprintf("status %d", http.StatusFailedDependency),
+				Descripion: "Sorry, your request failed as an route parameter was not found, please try again.",
+			})
+
 			return
 		}
 		param2, err := strconv.Atoi(param)
