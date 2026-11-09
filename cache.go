@@ -13,12 +13,14 @@ type Entry[T any] struct {
 type L1Cache[T any] map[string]*Entry[T]
 
 type Cache[T any] struct {
+	*Users
 	mu    sync.RWMutex
 	Store L1Cache[T]
 }
 
-func NewCache[T any]() *Cache[T] {
+func NewCache[T any](u *Users) *Cache[T] {
 	return &Cache[T]{
+		Users: u,
 		Store: make(L1Cache[T]),
 	}
 }
