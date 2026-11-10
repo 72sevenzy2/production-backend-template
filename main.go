@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/72sevenzy2/grouter/grouter"
@@ -21,12 +22,23 @@ func main() {
 
 	// API
 	users := NewUsers()
-	cache := NewCache[string](users)
+	cache := NewCache[string](func(s string) (string, error) {
+		id, err := strconv.Atoi(s)
+		if err != nil {
+			return "", err
+		}
+		val, ok := users.GetName(id)
+		if !ok {
+			return "", ErrNonExistentUser
+		}
+		return val, nil
+	}, NewSingleFlight[string, string]())
+
 	r.Post("api/users/createuser",
 		HandleCreateUser(users),
 		grouter.Timeout(time.Second*5), grouter.Logger(0)) // 5 second safe-gaurd and logger.
 
-	sf := NewSingleFlight[string]()
+	sf := NewSingleFlight[string, string]()
 	GetUserRateLimiter := grouter.NewLimiter(50, 1) // allow more requests for read-only route.
 	r.Get("api/users/getuser/:id", HandleGetUsername(users, cache, sf), grouter.Logger(0), GetUserRateLimiter.RateLimiter())
 

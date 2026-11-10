@@ -12,19 +12,19 @@ type Call[T ParamType] struct {
 	err error
 }
 
-type SingleFlight[T ParamType] struct {
+type SingleFlight[K comparable, V ParamType] struct {
 	mu    sync.Mutex
-	calls map[T]*Call[T]
+	calls map[K]*Call[V]
 }
 
-func NewSingleFlight[T ParamType]() *SingleFlight[T] {
-	return &SingleFlight[T]{
-		calls: make(map[T]*Call[T]),
+func NewSingleFlight[K comparable, V ParamType]() *SingleFlight[K, V] {
+	return &SingleFlight[K, V]{
+		calls: make(map[K]*Call[V]),
 	}
 }
 
 // execute-once logic function for cache stampede prevention.
-func (sf *SingleFlight[T]) Do(key T, fn func() (T, error)) (T, error) {
+func (sf *SingleFlight[K, V]) Do(key K, fn func() (V, error)) (V, error) {
 	sf.mu.Lock()
 
 	if c, ok := sf.calls[key]; ok {
@@ -34,7 +34,7 @@ func (sf *SingleFlight[T]) Do(key T, fn func() (T, error)) (T, error) {
 		return c.val, c.err
 	}
 
-	c := &Call[T]{}
+	c := &Call[V]{}
 	c.wg.Add(1)
 	sf.calls[key] = c
 

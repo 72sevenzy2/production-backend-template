@@ -5,23 +5,29 @@ import (
 	"sync/atomic"
 )
 
-type Entry[T any] struct {
+// todo 1: switch to read-through pattern.
+// todo 2: add cache penetration prevention.
+
+type Entry[T ParamType] struct {
 	Value T
 	Hits  atomic.Uint64 // LFU (Least Frequently Used) eviction.
 }
 
-type L1Cache[T any] map[string]*Entry[T]
+type L1Cache[T ParamType] map[string]*Entry[T]
 
-type Cache[T any] struct {
-	*Users
+type Cache[T ParamType] struct {
+	Loader func(string) (T, error)
+	SfFunc *SingleFlight[string, T]
+
 	mu    sync.RWMutex
 	Store L1Cache[T]
 }
 
-func NewCache[T any](u *Users) *Cache[T] {
+func NewCache[T ParamType](loaderFn func(string) (T, error), sfFn *SingleFlight[string, T]) *Cache[T] {
 	return &Cache[T]{
-		Users: u,
-		Store: make(L1Cache[T]),
+		SfFunc: sfFn,
+		Loader: loaderFn,
+		Store:  make(L1Cache[T]),
 	}
 }
 
@@ -30,8 +36,26 @@ func (c *Cache[T]) Get(k string) (T, bool) {
 	entry, ok := c.Store[k]
 	if !ok {
 		c.mu.RUnlock()
-		var zero T
-		return zero, false
+		val, err := c.SfFunc.Do(k, func() (T, error) {
+			c.mu.RLock()
+			entry, ok := c.Store[k]
+			c.mu.RUnlock()
+
+			if ok {
+				entry.Hits.Add(1)
+				return entry.Value, nil
+			}
+
+			val, err := c.Loader(k)
+			if err != nil {
+				var zero T
+				return zero, err
+			}
+
+			c.Put(k, val)
+			return val, nil
+		})
+		return val, err == nil
 	}
 	c.mu.RUnlock()
 
