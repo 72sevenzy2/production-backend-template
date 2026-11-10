@@ -1,6 +1,8 @@
 package main
 
-import "sync"
+import (
+	"sync"
+)
 
 type ParamType interface {
 	string | int
@@ -24,7 +26,7 @@ func NewSingleFlight[K comparable, V ParamType]() *SingleFlight[K, V] {
 }
 
 // execute-once logic function for cache stampede prevention.
-func (sf *SingleFlight[K, V]) Do(key K, fn func() (V, error)) (V, error) {
+func (sf *SingleFlight[K, V]) Do(key K, fn DependencyFn[V]) (V, error) {
 	sf.mu.Lock()
 
 	if c, ok := sf.calls[key]; ok {

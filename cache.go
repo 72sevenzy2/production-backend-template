@@ -5,24 +5,15 @@ import (
 	"sync/atomic"
 )
 
-// todo 2: add cache penetration prevention.
-
-type Entry[T ParamType] struct {
-	Value T
-	Hits  atomic.Uint64 // LFU (Least Frequently Used) eviction.
-}
-
-type L1Cache[T ParamType] map[string]*Entry[T]
-
 type Cache[T ParamType] struct {
-	Loader func(string) (T, error)
+	Loader LoaderFn[T]
 	SfFunc *SingleFlight[string, T]
 
 	mu    sync.RWMutex
 	Store L1Cache[T]
 }
 
-func NewCache[T ParamType](loaderFn func(string) (T, error), sfFn *SingleFlight[string, T]) *Cache[T] {
+func NewCache[T ParamType](loaderFn LoaderFn[T], sfFn *SingleFlight[string, T]) *Cache[T] {
 	return &Cache[T]{
 		SfFunc: sfFn,
 		Loader: loaderFn,
@@ -45,6 +36,7 @@ func (c *Cache[T]) Get(k string) (T, bool) {
 				return entry.Value, nil
 			}
 
+			// todo: add cache penetration prevention.
 			val, err := c.Loader(k)
 			if err != nil {
 				var zero T
@@ -66,10 +58,13 @@ func (c *Cache[T]) Put(k string, v T) bool {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
+	// LFU (Least Frequently Used) eviction policy.
+	// todo: add LRU tie-breaking.
+	// todo 2: add exponential decay to cache entry's frequency.
 	if len(c.Store) >= 10 {
 		var (
 			victimKey string
-			// bitwise ^ operator (equivalent to math.MaxUint64)
+			// bitwise NOT operator (^) for the highest possible uint64 value (equivalent to math.MaxUint64).
 			lowestHits uint64 = ^uint64(0)
 		)
 		for key, entry := range c.Store {
