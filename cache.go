@@ -5,7 +5,6 @@ import (
 	"sync/atomic"
 )
 
-// todo 1: switch to read-through pattern.
 // todo 2: add cache penetration prevention.
 
 type Entry[T ParamType] struct {

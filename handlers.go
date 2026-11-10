@@ -6,7 +6,6 @@ import (
 	"io"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/72sevenzy2/grouter/grouter"
 )
@@ -66,7 +65,7 @@ func HandleCreateUser(u *Users) grouter.HandlerFunc {
 	}
 }
 
-func HandleGetUsername(u *Users, cache *Cache[string], sf *SingleFlight[string]) grouter.HandlerFunc {
+func HandleGetUsername(u *Users, cache *Cache[string], sf *SingleFlight[string, string]) grouter.HandlerFunc {
 	return func(w http.ResponseWriter, r *grouter.Request) {
 		param, ok := r.Get("id")
 		if !ok {
@@ -78,30 +77,17 @@ func HandleGetUsername(u *Users, cache *Cache[string], sf *SingleFlight[string])
 			})
 			return
 		}
-		param2, err := strconv.Atoi(param)
-		if err != nil {
-			grouter.DisplayInternalServerError(w)
+
+		val, ok := cache.Get(param)
+		if !ok {
+			grouter.DisplayStatus(w, grouter.DisplayStatusConfig{
+				Code:       http.StatusFailedDependency,
+				Title:      fmt.Sprintf("status %d", http.StatusFailedDependency),
+				Heading:    fmt.Sprintf("status %d", http.StatusFailedDependency),
+				Descripion: "Sorry, your request failed as the user you were looking for was not found.",
+			})
 			return
 		}
-		val, err := sf.Do(param, func() (string, error) {
-			if val, ok := cache.Get(param); ok {
-				return val, nil
-			}
-
-			time.Sleep(time.Second * 1) // simulating heavy db query.
-			val, ok := u.GetName(param2)
-			if !ok {
-				grouter.DisplayStatus(w, grouter.DisplayStatusConfig{
-					Code:       http.StatusFailedDependency,
-					Title:      fmt.Sprintf("status %d", http.StatusFailedDependency),
-					Heading:    fmt.Sprintf("status %d", http.StatusFailedDependency),
-					Descripion: "Sorry, your request failed as the user id you were looking for was not found.",
-				})
-				return "", ErrNonExistentUser
-			}
-			cache.Put(param, val)
-			return val, nil
-		})
 		w.WriteHeader(http.StatusOK)
 		if err := json.NewEncoder(w).Encode(val); err != nil {
 			return
