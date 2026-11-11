@@ -24,11 +24,15 @@ type Cache[T ParamType] struct {
 	halfLife time.Duration
 }
 
-func NewCache[T ParamType](loaderFn LoaderFn[T], sfFn *SingleFlight[string, T]) *Cache[T] {
+func NewCache[T ParamType](loaderFn LoaderFn[T], sfFn *SingleFlight[string, T], halflife time.Duration) *Cache[T] {
+	if halflife == time.Duration(0) || halflife < time.Duration(0) {
+		halflife = time.Minute * 10
+	}
+
 	return &Cache[T]{
 		SfFunc:     sfFn,
 		LoaderFunc: loaderFn,
-		halfLife:   10 * time.Minute,
+		halfLife:   halflife,
 		Store:      make(L1Cache[T]),
 	}
 }

@@ -30,7 +30,7 @@ func main() {
 		}
 		val, ok := users.GetName(id)
 		return val, ok
-	}, NewSingleFlight[string, string]())
+	}, NewSingleFlight[string, string](), time.Minute*5)
 
 	r.Post("api/users/createuser",
 		HandleCreateUser(users),

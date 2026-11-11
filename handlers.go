@@ -37,6 +37,7 @@ func HandleEditUser(u *Users) grouter.HandlerFunc {
 		}
 
 		w.WriteHeader(http.StatusOK)
+		// todo: add cache invalidation.
 		ok2 := u.EditUser(param2, &UserEditConf)
 		if !ok2 {
 			grouter.DisplayStatus(w, grouter.DisplayStatusConfig{
