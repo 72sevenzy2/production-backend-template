@@ -1,17 +1,17 @@
 package main
 
-import (
-	"sync/atomic"
-)
+import "time"
 
 // Entry represents an individual cache entry, with its value and number of times accessed.
 type Entry[T ParamType] struct {
 	// Value represents the cache entry's value (a type to which satisfies ParamType)
 	Value T
 	// Hits is the number of times an entry has been accessed.
-	Hits atomic.Uint64
+	Hits float64
+	// LastDecay represents the last time an entry's access frequency had been decayed.
+	LastDecay time.Time
 	// LastAccess represents an entry's sequence number to determine whether it has recently been accessed.
-	LastAccess atomic.Uint64
+	LastAccess uint64
 }
 
 // L1Cache represents the underlying type of the cache's data store.
