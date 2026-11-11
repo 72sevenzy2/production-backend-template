@@ -6,8 +6,12 @@ import (
 
 // Entry represents an individual cache entry, with its value and number of times accessed.
 type Entry[T ParamType] struct {
+	// Value represents the cache entry's value (a type to which satisfies ParamType)
 	Value T
-	Hits  atomic.Uint64
+	// Hits is the number of times an entry has been accessed.
+	Hits atomic.Uint64
+	// LastAccess represents an entry's sequence number to determine whether it has recently been accessed.
+	LastAccess atomic.Uint64
 }
 
 // L1Cache represents the underlying type of the cache's data store.

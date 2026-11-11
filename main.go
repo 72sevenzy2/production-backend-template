@@ -21,6 +21,7 @@ func main() {
 	}, grouter.Logger(0))
 
 	// API
+
 	users := NewUsers()
 	cache := NewCache[string](func(s string) (string, bool) {
 		id, err := strconv.Atoi(s)
