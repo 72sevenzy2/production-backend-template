@@ -22,16 +22,13 @@ func main() {
 
 	// API
 	users := NewUsers()
-	cache := NewCache[string](func(s string) (string, error) {
+	cache := NewCache[string](func(s string) (string, bool) {
 		id, err := strconv.Atoi(s)
 		if err != nil {
-			return "", err
+			return "", false
 		}
 		val, ok := users.GetName(id)
-		if !ok {
-			return "", ErrNonExistentUser
-		}
-		return val, nil
+		return val, ok
 	}, NewSingleFlight[string, string]())
 
 	r.Post("api/users/createuser",

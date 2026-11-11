@@ -17,4 +17,4 @@ type L1Cache[T ParamType] map[string]*Entry[T]
 type DependencyFn[T ParamType] func() (T, error)
 
 // LoaderFn is a function responsible for retrieving a user from the database incase of nil user ids.
-type LoaderFn[T ParamType] func(string) (T, error)
+type LoaderFn[T ParamType] func(string) (T, bool)
