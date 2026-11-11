@@ -36,11 +36,10 @@ func (c *Cache[T]) Get(k string) (T, bool) {
 				return entry.Value, nil
 			}
 
-			// todo: add cache penetration prevention.
-			val, err := c.Loader(k)
-			if err != nil {
+			val, ok := c.Loader(k)
+			if !ok {
 				var zero T
-				return zero, err
+				return zero, ErrInternalServerError
 			}
 
 			c.Put(k, val)
