@@ -5,6 +5,8 @@ import (
 	"sync/atomic"
 )
 
+const MAX_CACHE_SIZE = 10
+
 type Cache[T ParamType] struct {
 	Loader LoaderFn[T]
 	SfFunc *SingleFlight[string, T]
@@ -60,7 +62,7 @@ func (c *Cache[T]) Put(k string, v T) bool {
 	// LFU (Least Frequently Used) eviction policy.
 	// todo: add LRU tie-breaking.
 	// todo 2: add exponential decay to cache entry's frequency.
-	if len(c.Store) >= 10 {
+	if len(c.Store) >= MAX_CACHE_SIZE {
 		var (
 			victimKey string
 			// bitwise NOT operator (^) for the highest possible uint64 value (equivalent to math.MaxUint64).
