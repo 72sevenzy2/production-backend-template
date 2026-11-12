@@ -10,7 +10,7 @@ import (
 	"github.com/72sevenzy2/grouter/grouter"
 )
 
-func HandleEditUser(u *Users) grouter.HandlerFunc {
+func HandleEditUser(u *Users, cache *Cache[string]) grouter.HandlerFunc {
 	return func(w http.ResponseWriter, r *grouter.Request) {
 		param, ok := r.Get("id")
 		if !ok {
@@ -39,6 +39,7 @@ func HandleEditUser(u *Users) grouter.HandlerFunc {
 		w.WriteHeader(http.StatusOK)
 		// todo: add cache invalidation.
 		ok2 := u.EditUser(param2, &UserEditConf)
+		cache.Del(param) // invalidate cache.
 		if !ok2 {
 			grouter.DisplayStatus(w, grouter.DisplayStatusConfig{
 				Code:       http.StatusFailedDependency,

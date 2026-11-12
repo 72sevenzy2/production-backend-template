@@ -47,7 +47,7 @@ func main() {
 
 	secretToken2 := "123456"
 	r.Put("api/users/editUser/:id",
-		HandleEditUser(users),
+		HandleEditUser(users, cache),
 		grouter.BearerAuth(secretToken2),
 		grouter.Logger(0))
 

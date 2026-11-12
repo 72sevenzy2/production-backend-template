@@ -113,6 +113,10 @@ func (c *Cache[T]) Put(k string, v T) bool {
 	return true
 }
 
+func (c *Cache[T]) Del(k string) {
+	delete(c.Store, k)
+}
+
 func (c *Cache[T]) decay(entry *Entry[T], now time.Time) {
 	elapsed := now.Sub(entry.LastDecay)
 	if elapsed <= 0 {
