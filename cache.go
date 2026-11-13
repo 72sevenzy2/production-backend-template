@@ -73,6 +73,28 @@ func (c *Cache[T]) Get(k string) (T, bool) {
 	return entry.Value, true
 }
 
+func (c *Cache[T]) Edit(k string, v T) bool {
+	c.mu.RLock()
+	initialStore, ok := c.Store[k]
+	if !ok {
+		return false
+	}
+	c.mu.RUnlock()
+
+	// copying on write.
+	newEntry := &Entry[T]{
+		Value:      v,
+		Hits:       initialStore.Hits,
+		LastDecay:  initialStore.LastDecay,
+		LastAccess: initialStore.LastAccess,
+	}
+
+	c.mu.Lock()
+	c.Store[k] = newEntry
+	c.mu.Unlock()
+	return true
+}
+
 func (c *Cache[T]) Put(k string, v T) bool {
 	c.mu.Lock()
 	defer c.mu.Unlock()
