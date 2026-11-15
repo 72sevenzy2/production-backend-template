@@ -38,21 +38,20 @@ func NewCache[T ParamType](loaderFn LoaderFn[T], sfFn *SingleFlight[string, T], 
 }
 
 func (c *Cache[T]) Get(k string) (T, bool) {
-	c.mu.RLock()
+	c.mu.Lock()
 	entry, ok := c.Store[k]
 	if !ok {
-		c.mu.RUnlock()
+		c.mu.Unlock()
 		val, err := c.SfFunc.Do(k, func() (T, error) {
-			c.mu.RLock()
+			c.mu.Lock()
 			entry, ok := c.Store[k]
-			c.mu.RUnlock()
 
 			if ok {
-				c.mu.Lock()
 				c.recordAccess(entry)
 				c.mu.Unlock()
 				return entry.Value, nil
 			}
+			c.mu.Unlock()
 
 			val, ok := c.LoaderFunc(k)
 			if !ok {
@@ -65,9 +64,6 @@ func (c *Cache[T]) Get(k string) (T, bool) {
 		})
 		return val, err == nil
 	}
-	c.mu.RUnlock()
-
-	c.mu.Lock()
 	c.recordAccess(entry)
 	c.mu.Unlock()
 	return entry.Value, true
@@ -97,6 +93,10 @@ func (c *Cache[T]) Put(k string, v T) bool {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
+	if _, ok := c.Store[k]; ok {
+		return false
+	}
+
 	// LFU + exponential frequency decay paired with LRU tie-breaking.
 	if len(c.Store) >= MAX_CACHE_SIZE {
 		var (
@@ -120,10 +120,6 @@ func (c *Cache[T]) Put(k string, v T) bool {
 			}
 		}
 		delete(c.Store, victimKey)
-	}
-
-	if _, ok := c.Store[k]; ok {
-		return false
 	}
 
 	c.Store[k] = &Entry[T]{
