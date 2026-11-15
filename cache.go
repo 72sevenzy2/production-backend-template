@@ -136,6 +136,8 @@ func (c *Cache[T]) Put(k string, v T) bool {
 }
 
 func (c *Cache[T]) Del(k string) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
 	delete(c.Store, k)
 }
 
