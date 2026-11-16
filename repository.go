@@ -5,10 +5,10 @@ import (
 )
 
 type User struct {
-	ID        int
-	Username  string
-	Followers int
-	Following int
+	ID        int    `json:"id"`
+	Username  string `json:"username"`
+	Followers int    `json:"followers"`
+	Following int    `json:"following"`
 }
 
 type Users struct {
