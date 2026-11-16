@@ -34,24 +34,22 @@ func BenchmarkEditUser(b *testing.B) {
 
 	b.ReportAllocs()
 	for b.Loop() {
-		for v := range 100 {
-			data := []byte(fmt.Sprintf(`
+		data := []byte(fmt.Sprintf(`
 			{
-				"username": %s,
+				"username": "%s",
 				"following": %d,
 				"followers": %d
 			}
-			`, "test", v+1, v+1))
+			`, "test", b.N, b.N))
 
-			req := httptest.NewRequest(http.MethodPut, "/api/edituser/10", bytes.NewReader(data))
-			rr := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodPut, "/api/edituser/10", bytes.NewReader(data))
+		rr := httptest.NewRecorder()
 
-			handler.ServeHTTP(rr, req)
+		handler.ServeHTTP(rr, req)
 
-			if rr.Code != http.StatusOK {
-				b.Fatalf("got status %d, and expected %d", rr.Code, http.StatusOK)
-				return
-			}
+		if rr.Code != http.StatusOK {
+			b.Fatalf("got status %d, and expected %d", rr.Code, http.StatusOK)
+			return
 		}
 	}
 }
