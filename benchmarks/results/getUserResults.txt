@@ -1,0 +1,26 @@
+goos: windows
+goarch: amd64
+pkg: github.com/72sevenzy2/production-backend-template/benchmarks
+cpu: 11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz
+BenchmarkGetUser-8   	  253990	      4420 ns/op	    5620 B/op	      19 allocs/op
+BenchmarkGetUser-8   	  393422	      7161 ns/op	    5620 B/op	      19 allocs/op
+BenchmarkGetUser-8   	  124096	     10354 ns/op	    5620 B/op	      19 allocs/op
+BenchmarkGetUser-8   	  122113	      9739 ns/op	    5620 B/op	      19 allocs/op
+BenchmarkGetUser-8   	  129922	      9496 ns/op	    5620 B/op	      19 allocs/op
+BenchmarkGetUser-8   	  134730	      9269 ns/op	    5620 B/op	      19 allocs/op
+BenchmarkGetUser-8   	  119326	     10245 ns/op	    5620 B/op	      19 allocs/op
+BenchmarkGetUser-8   	  127352	     10244 ns/op	    5620 B/op	      19 allocs/op
+BenchmarkGetUser-8   	  128091	      9378 ns/op	    5620 B/op	      19 allocs/op
+BenchmarkGetUser-8   	  137728	      9188 ns/op	    5620 B/op	      19 allocs/op
+BenchmarkGetUser-8   	  137330	      9354 ns/op	    5620 B/op	      19 allocs/op
+BenchmarkGetUser-8   	  125737	      9118 ns/op	    5620 B/op	      19 allocs/op
+BenchmarkGetUser-8   	  144298	      8933 ns/op	    5620 B/op	      19 allocs/op
+BenchmarkGetUser-8   	  147459	     10884 ns/op	    5620 B/op	      19 allocs/op
+BenchmarkGetUser-8   	  120644	      9259 ns/op	    5620 B/op	      19 allocs/op
+BenchmarkGetUser-8   	  132860	      9126 ns/op	    5620 B/op	      19 allocs/op
+BenchmarkGetUser-8   	  118652	      9649 ns/op	    5620 B/op	      19 allocs/op
+BenchmarkGetUser-8   	  124404	      8944 ns/op	    5620 B/op	      19 allocs/op
+BenchmarkGetUser-8   	  136545	      9643 ns/op	    5620 B/op	      19 allocs/op
+BenchmarkGetUser-8   	  122401	     10258 ns/op	    5620 B/op	      19 allocs/op
+PASS
+ok  	github.com/72sevenzy2/production-backend-template/benchmarks	29.808s

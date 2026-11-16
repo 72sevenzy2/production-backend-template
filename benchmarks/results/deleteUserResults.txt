@@ -1,0 +1,26 @@
+goos: windows
+goarch: amd64
+pkg: github.com/72sevenzy2/production-backend-template/benchmarks
+cpu: 11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz
+BenchmarkDeleteUser-8   	  255073	      4526 ns/op	    5426 B/op	      15 allocs/op
+BenchmarkDeleteUser-8   	  209512	      6008 ns/op	    5426 B/op	      15 allocs/op
+BenchmarkDeleteUser-8   	  167991	      7685 ns/op	    5426 B/op	      15 allocs/op
+BenchmarkDeleteUser-8   	  185094	      9289 ns/op	    5426 B/op	      15 allocs/op
+BenchmarkDeleteUser-8   	  153296	      7956 ns/op	    5426 B/op	      15 allocs/op
+BenchmarkDeleteUser-8   	  134665	      8811 ns/op	    5426 B/op	      15 allocs/op
+BenchmarkDeleteUser-8   	  110377	     10039 ns/op	    5426 B/op	      15 allocs/op
+BenchmarkDeleteUser-8   	  183070	      6876 ns/op	    5426 B/op	      15 allocs/op
+BenchmarkDeleteUser-8   	  167845	      7508 ns/op	    5426 B/op	      15 allocs/op
+BenchmarkDeleteUser-8   	  157813	      7108 ns/op	    5426 B/op	      15 allocs/op
+BenchmarkDeleteUser-8   	  144450	      8463 ns/op	    5426 B/op	      15 allocs/op
+BenchmarkDeleteUser-8   	  186580	      8049 ns/op	    5426 B/op	      15 allocs/op
+BenchmarkDeleteUser-8   	  183441	      7163 ns/op	    5426 B/op	      15 allocs/op
+BenchmarkDeleteUser-8   	  159724	      7238 ns/op	    5426 B/op	      15 allocs/op
+BenchmarkDeleteUser-8   	  147024	      8011 ns/op	    5426 B/op	      15 allocs/op
+BenchmarkDeleteUser-8   	  171698	      6563 ns/op	    5426 B/op	      15 allocs/op
+BenchmarkDeleteUser-8   	  171500	      8396 ns/op	    5426 B/op	      15 allocs/op
+BenchmarkDeleteUser-8   	  148753	      8390 ns/op	    5426 B/op	      15 allocs/op
+BenchmarkDeleteUser-8   	  160468	      7415 ns/op	    5426 B/op	      15 allocs/op
+BenchmarkDeleteUser-8   	  170854	      7472 ns/op	    5426 B/op	      15 allocs/op
+PASS
+ok  	github.com/72sevenzy2/production-backend-template/benchmarks	163.065s
