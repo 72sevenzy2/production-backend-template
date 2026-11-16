@@ -1,7 +1,6 @@
 package benchmarks
 
 import (
-	"bytes"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
@@ -29,26 +28,18 @@ func BenchmarkGetUser(b *testing.B) {
 
 	}, utils.NewSingleFlight[string, string](), time.Minute*5)
 	u.AddUser("testName", 10, 10, 10)
-	handler.Post("api/getuser/:id", handlers.HandleGetUsername(u, cache, utils.NewSingleFlight[string, string]()))
+	handler.Get("api/getuser/:id", handlers.HandleGetUsername(u, cache, utils.NewSingleFlight[string, string]()))
 
 	b.ReportAllocs()
 	for b.Loop() {
-		data := []byte(`
-		{
-			"id": 10,
-			"followers": 31,
-			"following": 31,
-			"username": "test"
-		}
-		`)
 
-		req := httptest.NewRequest(http.MethodPost, "/api/createuser/12", bytes.NewReader(data))
+		req := httptest.NewRequest(http.MethodGet, "/api/getuser/10", nil)
 		rr := httptest.NewRecorder()
 
 		handler.ServeHTTP(rr, req)
 
-		if rr.Code != http.StatusCreated {
-			b.Fatalf("got status %d, and expected %d", rr.Code, http.StatusCreated)
+		if rr.Code != http.StatusOK {
+			b.Fatalf("got status %d, and expected %d", rr.Code, http.StatusOK)
 			return
 		}
 	}
