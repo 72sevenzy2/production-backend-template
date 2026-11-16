@@ -33,7 +33,7 @@ func HandleEditUser(u *repo.Users, cache *repo.Cache[string]) grouter.HandlerFun
 		}
 
 		var UserEditConf repo.EditUserConfig
-		limitedReader := io.LimitReader(r.Body, 1024*1023) // 1 MiB
+		limitedReader := io.LimitReader(r.Body, 1024*1024) // 1 MiB
 		if err := json.NewDecoder(limitedReader).Decode(&UserEditConf); err != nil {
 			grouter.DisplayInternalServerError(w)
 			return
@@ -42,7 +42,6 @@ func HandleEditUser(u *repo.Users, cache *repo.Cache[string]) grouter.HandlerFun
 		w.WriteHeader(http.StatusOK)
 		// todo: add cache invalidation.
 		ok2 := u.EditUser(param2, &UserEditConf)
-		_ = cache.Edit(param, UserEditConf.Username)
 		if !ok2 {
 			grouter.DisplayStatus(w, grouter.DisplayStatusConfig{
 				Code:       http.StatusFailedDependency,
