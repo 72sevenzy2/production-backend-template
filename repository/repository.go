@@ -46,9 +46,9 @@ func (u *Users) DeleteUser(ID int) {
 }
 
 type EditUserConfig struct {
-	Username  string
-	Followers int
-	Following int
+	Username  string `json:"username"`
+	Followers int    `json:"followers"`
+	Following int    `json:"following"`
 }
 
 func (u *Users) EditUser(ID int, conf *EditUserConfig) bool {
