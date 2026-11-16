@@ -6,6 +6,11 @@ import (
 	"time"
 
 	"github.com/72sevenzy2/grouter/grouter"
+
+	handlers "github.com/72sevenzy2/production-backend-template/handlers"
+
+	utils "github.com/72sevenzy2/production-backend-template/internal"
+	repo "github.com/72sevenzy2/production-backend-template/repository"
 )
 
 func main() {
@@ -22,32 +27,32 @@ func main() {
 
 	// API
 
-	users := NewUsers()
-	cache := NewCache[string](func(s string) (string, bool) {
+	users := repo.NewUsers()
+	cache := repo.NewCache[string](func(s string) (string, bool) {
 		id, err := strconv.Atoi(s)
 		if err != nil {
 			return "", false
 		}
 		val, ok := users.GetName(id)
 		return val, ok
-	}, NewSingleFlight[string, string](), time.Minute*5)
+	}, utils.NewSingleFlight[string, string](), time.Minute*5)
 
 	r.Post("api/users/createuser",
-		HandleCreateUser(users),
+		handlers.HandleCreateUser(users),
 		grouter.Timeout(time.Second*5), grouter.Logger(0)) // 5 second safe-gaurd and logger.
 
-	sf := NewSingleFlight[string, string]()
+	sf := utils.NewSingleFlight[string, string]()
 	GetUserRateLimiter := grouter.NewLimiter(50, 1) // allow more requests for read-only route.
-	r.Get("api/users/getuser/:id", HandleGetUsername(users, cache, sf), grouter.Logger(0), GetUserRateLimiter.RateLimiter())
+	r.Get("api/users/getuser/:id", handlers.HandleGetUsername(users, cache, sf), grouter.Logger(0), GetUserRateLimiter.RateLimiter())
 
 	secretToken := "abcdefg" // super secret bearer auth token
 	r.Del("api/users/deleteuser/:id",
-		HandleDeleteUser(users),
+		handlers.HandleDeleteUser(users),
 		grouter.BearerAuth(secretToken), grouter.Timeout(time.Second*3))
 
 	secretToken2 := "123456"
 	r.Put("api/users/editUser/:id",
-		HandleEditUser(users, cache),
+		handlers.HandleEditUser(users, cache),
 		grouter.BearerAuth(secretToken2),
 		grouter.Logger(0))
 

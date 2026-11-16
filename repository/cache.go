@@ -1,30 +1,32 @@
-package main
+package repository
 
 import (
 	"math"
 	"sync"
 	"sync/atomic"
 	"time"
+
+	utils "github.com/72sevenzy2/production-backend-template/internal"
 )
 
 // MAX_CACHE_SIZE is the max number of entries of the l1 cache.
 const MAX_CACHE_SIZE = 10
 
-type Cache[T ParamType] struct {
+type Cache[T utils.ParamType] struct {
 	// LoaderFunc is a function reponsible for retrieving a user on the database.
-	LoaderFunc LoaderFn[T]
+	LoaderFunc utils.LoaderFn[T]
 	// SfFunc is a function responsible for request coalescing to prevent cache stampedes.
-	SfFunc *SingleFlight[string, T]
+	SfFunc *utils.SingleFlight[string, T]
 	// Store represents the l1 map of the cache.
 	mu    sync.RWMutex
-	Store L1Cache[T]
+	Store utils.L1Cache[T]
 	// clock is a global counter responsible for computing an entry's last-used sequence number.
 	clock atomic.Uint64
 	// halfLife represents the duration until an entry's access frequency is reduced to half its amount.
 	halfLife time.Duration
 }
 
-func NewCache[T ParamType](loaderFn LoaderFn[T], sfFn *SingleFlight[string, T], halflife time.Duration) *Cache[T] {
+func NewCache[T utils.ParamType](loaderFn utils.LoaderFn[T], sfFn *utils.SingleFlight[string, T], halflife time.Duration) *Cache[T] {
 	if halflife == time.Duration(0) || halflife < time.Duration(0) {
 		halflife = time.Minute * 10
 	}
@@ -33,7 +35,7 @@ func NewCache[T ParamType](loaderFn LoaderFn[T], sfFn *SingleFlight[string, T], 
 		SfFunc:     sfFn,
 		LoaderFunc: loaderFn,
 		halfLife:   halflife,
-		Store:      make(L1Cache[T]),
+		Store:      make(utils.L1Cache[T]),
 	}
 }
 
@@ -56,7 +58,7 @@ func (c *Cache[T]) Get(k string) (T, bool) {
 			val, ok := c.LoaderFunc(k)
 			if !ok {
 				var zero T
-				return zero, ErrInternalServerError
+				return zero, utils.ErrInternalServerError
 			}
 
 			c.Put(k, val)
@@ -78,7 +80,7 @@ func (c *Cache[T]) Edit(k string, v T) bool {
 	}
 
 	// copying on write.
-	newEntry := &Entry[T]{
+	newEntry := &utils.Entry[T]{
 		Value:      v,
 		Hits:       initialStore.Hits,
 		LastDecay:  initialStore.LastDecay,
@@ -122,7 +124,7 @@ func (c *Cache[T]) Put(k string, v T) bool {
 		delete(c.Store, victimKey)
 	}
 
-	c.Store[k] = &Entry[T]{
+	c.Store[k] = &utils.Entry[T]{
 		LastDecay: time.Now(),
 		Value:     v,
 	}
@@ -135,7 +137,7 @@ func (c *Cache[T]) Del(k string) {
 	delete(c.Store, k)
 }
 
-func (c *Cache[T]) decay(entry *Entry[T], now time.Time) {
+func (c *Cache[T]) decay(entry *utils.Entry[T], now time.Time) {
 	elapsed := now.Sub(entry.LastDecay)
 	if elapsed <= 0 {
 		return
@@ -146,7 +148,7 @@ func (c *Cache[T]) decay(entry *Entry[T], now time.Time) {
 	entry.LastDecay = now
 }
 
-func (c *Cache[T]) recordAccess(entry *Entry[T]) {
+func (c *Cache[T]) recordAccess(entry *utils.Entry[T]) {
 	now := time.Now()
 	c.decay(entry, now)
 	entry.Hits++

@@ -7,13 +7,16 @@ import (
 	"testing"
 
 	"github.com/72sevenzy2/grouter/grouter"
+	handlers "github.com/72sevenzy2/production-backend-template/handlers"
+
+	repo "github.com/72sevenzy2/production-backend-template/repository"
 )
 
 func BenchmarkCreateUser(b *testing.B) {
 	handler := grouter.NewGrouter()
 
-	u := NewUsers()
-	handler.Post("api/createuser/:id", HandleCreateUser(u))
+	u := repo.NewUsers()
+	handler.Post("api/createuser/:id", handlers.HandleCreateUser(u))
 
 	b.ReportAllocs()
 	for b.Loop() {

@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"encoding/json"
@@ -8,9 +8,12 @@ import (
 	"strconv"
 
 	"github.com/72sevenzy2/grouter/grouter"
+	repo "github.com/72sevenzy2/production-backend-template/repository"
+
+	utils "github.com/72sevenzy2/production-backend-template/internal"
 )
 
-func HandleEditUser(u *Users, cache *Cache[string]) grouter.HandlerFunc {
+func HandleEditUser(u *repo.Users, cache *repo.Cache[string]) grouter.HandlerFunc {
 	return func(w http.ResponseWriter, r *grouter.Request) {
 		param, ok := r.Get("id")
 		if !ok {
@@ -29,7 +32,7 @@ func HandleEditUser(u *Users, cache *Cache[string]) grouter.HandlerFunc {
 			return
 		}
 
-		var UserEditConf EditUserConfig
+		var UserEditConf repo.EditUserConfig
 		limitedReader := io.LimitReader(r.Body, 1024*1023) // 1 MiB
 		if err := json.NewDecoder(limitedReader).Decode(&UserEditConf); err != nil {
 			grouter.DisplayInternalServerError(w)
@@ -55,10 +58,10 @@ func HandleEditUser(u *Users, cache *Cache[string]) grouter.HandlerFunc {
 	}
 }
 
-func HandleCreateUser(u *Users) grouter.HandlerFunc {
+func HandleCreateUser(u *repo.Users) grouter.HandlerFunc {
 	return func(w http.ResponseWriter, r *grouter.Request) {
 		limitedReader := io.LimitReader(r.Body, 1024*1024) // 1 MiB
-		var user User
+		var user repo.User
 		if err := json.NewDecoder(limitedReader).Decode(&user); err != nil {
 			grouter.DisplayInternalServerError(w)
 			return
@@ -69,7 +72,7 @@ func HandleCreateUser(u *Users) grouter.HandlerFunc {
 	}
 }
 
-func HandleGetUsername(u *Users, cache *Cache[string], sf *SingleFlight[string, string]) grouter.HandlerFunc {
+func HandleGetUsername(u *repo.Users, cache *repo.Cache[string], sf *utils.SingleFlight[string, string]) grouter.HandlerFunc {
 	return func(w http.ResponseWriter, r *grouter.Request) {
 		param, ok := r.Get("id")
 		if !ok {
@@ -99,7 +102,7 @@ func HandleGetUsername(u *Users, cache *Cache[string], sf *SingleFlight[string, 
 	}
 }
 
-func HandleDeleteUser(u *Users) grouter.HandlerFunc {
+func HandleDeleteUser(u *repo.Users) grouter.HandlerFunc {
 	return func(w http.ResponseWriter, r *grouter.Request) {
 		param, ok := r.Get("id")
 		if !ok {
