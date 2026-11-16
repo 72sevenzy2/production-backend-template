@@ -18,9 +18,13 @@ func BenchmarkCreateUser(b *testing.B) {
 	u := repo.NewUsers()
 	handler.Post("api/createuser/:id", handlers.HandleCreateUser(u))
 
+	data := make([]byte, 0, 128)
+
 	b.ReportAllocs()
 	for b.Loop() {
-		data := []byte(`
+		data = data[:0]
+
+		data = []byte(`
 		{
 			"id": 10,
 			"followers": 31,

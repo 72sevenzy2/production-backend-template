@@ -32,9 +32,13 @@ func BenchmarkEditUser(b *testing.B) {
 	u.AddUser("testName", 10, 10, 10)
 	handler.Put("api/edituser/:id", handlers.HandleEditUser(u, cache))
 
+	data := make([]byte, 0, 128)
+
 	b.ReportAllocs()
 	for b.Loop() {
-		data := []byte(fmt.Sprintf(`
+		data = data[:0]
+
+		data = []byte(fmt.Sprintf(`
 			{
 				"username": "%s",
 				"following": %d,
