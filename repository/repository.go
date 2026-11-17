@@ -4,6 +4,8 @@ import (
 	"sync"
 )
 
+// an mimic database for storing users, with O(n) lookup times to mimic an heavy db query.
+
 type User struct {
 	ID        int    `json:"id"`
 	Username  string `json:"username"`
