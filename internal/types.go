@@ -22,3 +22,14 @@ type DependencyFn[T ParamType] func() (T, error)
 
 // LoaderFn is a function responsible for retrieving a user from the database incase of nil user ids.
 type LoaderFn[T ParamType] func(string) (T, bool)
+
+type RegisterRequest struct {
+	Username string `json:"username"`
+	ID       int    `json:"id"`
+	Password string `json:"password"`
+}
+
+type LoginRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
