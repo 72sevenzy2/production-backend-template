@@ -37,21 +37,23 @@ func main() {
 		return val, ok
 	}, utils.NewSingleFlight[string, string](), time.Minute*5)
 
-	r.Post("api/users/createuser",
+	api := r.Group("api")
+
+	api.Post("users/createuser",
 		handlers.HandleCreateUser(users),
 		grouter.Timeout(time.Second*5), grouter.Logger(0)) // 5 second safe-gaurd and logger.
 
 	sf := utils.NewSingleFlight[string, string]()
 	GetUserRateLimiter := grouter.NewLimiter(50, 1) // allow more requests for read-only route.
-	r.Get("api/users/getuser/:id", handlers.HandleGetUsername(users, cache, sf), grouter.Logger(0), GetUserRateLimiter.RateLimiter())
+	api.Get("users/getuser/:id", handlers.HandleGetUsername(users, cache, sf), grouter.Logger(0), GetUserRateLimiter.RateLimiter())
 
 	secretToken := "abcdefg" // super secret bearer auth token
-	r.Del("api/users/deleteuser/:id",
+	api.Del("users/deleteuser/:id",
 		handlers.HandleDeleteUser(users),
 		grouter.BearerAuth(secretToken), grouter.Timeout(time.Second*3))
 
 	secretToken2 := "123456"
-	r.Put("api/users/editUser/:id",
+	api.Put("users/editUser/:id",
 		handlers.HandleEditUser(users, cache),
 		grouter.BearerAuth(secretToken2),
 		grouter.Logger(0))
