@@ -8,6 +8,7 @@ import (
 
 	"github.com/72sevenzy2/grouter/grouter"
 	"github.com/72sevenzy2/production-backend-template/handlers"
+	utils "github.com/72sevenzy2/production-backend-template/internal"
 	repo "github.com/72sevenzy2/production-backend-template/repository"
 )
 
@@ -15,13 +16,17 @@ func TestUserLogin(t *testing.T) {
 	r := grouter.NewGrouter()
 
 	users := repo.NewUsers()
-	users.AddUser("test", "pass123", 10, 0, 0) // pre-initialisation for test user credentials
+	hashed, err := utils.HashPassword("test123")
+	if err != nil {
+		t.Fatal(err)
+	}
+	users.AddUser("test", hashed, 10, 0, 0) // pre-initialisation for test user credentials
 	r.Post("loginuser", handlers.HandleUserLogin(users))
 
 	data := []byte(`
 	{
 		"id": 10,
-		"password": "pass123"
+		"password": "test123"
 	}
 	`)
 
