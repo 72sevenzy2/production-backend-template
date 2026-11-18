@@ -60,10 +60,16 @@ func main() {
 
 	// few authenticated endpoints (creating users and logging in).
 
-	// authLimiter := grouter.NewLimiter(5, 1)
-	//
-	// auth := api.Group("auth") // this now becomes api/auth/..
-	// auth.Post("login",.., authLimiter.RateLimiter())
+	authLimiter := grouter.NewLimiter(15, 1)
+
+	auth := api.Group("auth") // this now becomes api/auth/..
+	auth.Use(grouter.Recoverer())
+	auth.Use(authLimiter.RateLimiter())
+	auth.Use(grouter.Logger(0))
+
+	auth.Post("createuser", handlers.HandleAuthCreateUser(users))
+
+	auth.Get("loginuser", handlers.HandleUserLogin(users))
 
 	srv := &http.Server{
 		Addr:              ":9000",
