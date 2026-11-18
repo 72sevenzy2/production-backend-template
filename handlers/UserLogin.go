@@ -34,9 +34,9 @@ func HandleUserLogin(u *repo.Users) grouter.HandlerFunc {
 
 		if user.Password != LoginReq.Password {
 			grouter.DisplayStatus(w, grouter.DisplayStatusConfig{
-				Code:       http.StatusForbidden,
-				Title:      fmt.Sprintf("status %d", http.StatusForbidden),
-				Heading:    fmt.Sprintf("status %d", http.StatusForbidden),
+				Code:       http.StatusUnauthorized,
+				Title:      fmt.Sprintf("status %d", http.StatusUnauthorized),
+				Heading:    fmt.Sprintf("status %d", http.StatusUnauthorized),
 				Descripion: "Sorry, the password you entered for the account was wrong.",
 			})
 			return

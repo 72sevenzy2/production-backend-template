@@ -69,7 +69,7 @@ func main() {
 
 	auth.Post("createuser", handlers.HandleAuthCreateUser(users))
 
-	auth.Get("loginuser", handlers.HandleUserLogin(users))
+	auth.Post("loginuser", handlers.HandleUserLogin(users))
 
 	srv := &http.Server{
 		Addr:              ":9000",
