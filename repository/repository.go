@@ -9,6 +9,7 @@ import (
 type User struct {
 	ID        int    `json:"id"`
 	Username  string `json:"username"`
+	Password  string `json:"password"`
 	Followers int    `json:"followers"`
 	Following int    `json:"following"`
 }
@@ -71,11 +72,17 @@ func (u *Users) EditUser(ID int, conf *EditUserConfig) bool {
 	return false
 }
 
-func (u *Users) AddUser(name string, ID, followers, following int) bool {
+func (u *Users) AddUser(name, pass string, ID, followers, following int) bool {
 	u.mu.Lock()
 	defer u.mu.Unlock()
+
+	if _, ok := u.GetName(ID); ok {
+		return false
+	}
+
 	user := User{
 		ID:        ID,
+		Password:  pass,
 		Username:  name,
 		Followers: followers,
 		Following: following,

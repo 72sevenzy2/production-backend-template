@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 
@@ -18,8 +19,13 @@ func HandleCreateUser(u *repo.Users) grouter.HandlerFunc {
 			return
 		}
 
-		if ok := u.AddUser(user.Username, user.ID, user.Followers, user.Following); !ok {
-			grouter.DisplayInternalServerError(w)
+		if ok := u.AddUser(user.Username, "", user.ID, user.Followers, user.Following); !ok {
+			grouter.DisplayStatus(w, grouter.DisplayStatusConfig{
+				Code:       http.StatusInternalServerError,
+				Title:      http.StatusText(http.StatusInternalServerError),
+				Heading:    fmt.Sprintf("status %d", http.StatusInternalServerError),
+				Descripion: "sorry, this user has already been registered!",
+			})
 			return
 		}
 		w.WriteHeader(http.StatusCreated)
