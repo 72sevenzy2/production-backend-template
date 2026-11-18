@@ -4,3 +4,7 @@ github.com/72sevenzy2/grouter v0.0.0-20261109145526-f50b6df016c9 h1:B/m3nkB2RYPQ
 github.com/72sevenzy2/grouter v0.0.0-20261109145526-f50b6df016c9/go.mod h1:4ANxNXmwufD1lTNH8V8L1RvqNV8OGLPZ66NoX+1Y9Q4=
 github.com/72sevenzy2/json-parser v0.0.0-20260913135209-918df9c221ac h1:VfAb+YBf13/GsFEpP+rYMBSn9sKxrqJZVU0FTsVcIUY=
 github.com/72sevenzy2/json-parser v0.0.0-20260913135209-918df9c221ac/go.mod h1:wA/oKrssLUp44rupBrh/cRqQdl3qcLEoES5jK7+VpVg=
+golang.org/x/crypto v0.59.0 h1:xS2jhqYbzNrpvkWP2YTDf4TJwBy3ykR03i8vFDxEc7c=
+golang.org/x/crypto v0.59.0/go.mod h1:veDyUwATGs3c+vN3VfTbzViMGXeTBk3WyhBOkn+F/4U=
+golang.org/x/sys v0.50.0 h1:dkKZEFTEKaLr1sjhs0WiKqoi8Jj5nHbS3Njmx1UoMJs=
+golang.org/x/sys v0.50.0/go.mod h1:hNLxWAXmnKAxqDtdwIYC4bM9oQPEecfsnNMuSxOs3og=
