@@ -48,11 +48,7 @@ func (u *Users) getName(ID int) (string, bool) {
 func (u *Users) GetName(ID int) (string, bool) {
 	u.mu.RLock()
 	defer u.mu.RUnlock()
-	for v := range u.UsersDB {
-		if u.UsersDB[v].ID == ID {
-			return u.UsersDB[v].Username, true
-		}
-	}
+	u.getName(ID)
 	return "", false
 }
 
@@ -96,7 +92,7 @@ func (u *Users) AddUser(name, pass string, ID, followers, following int) bool {
 	u.mu.Lock()
 	defer u.mu.Unlock()
 
-	if _, ok := u.getName(ID); ok {
+	if _, ok := u.getName(ID); !ok {
 		return false
 	}
 
