@@ -25,6 +25,18 @@ func NewUsers() *Users {
 	}
 }
 
+func (u *Users) GetUser(ID int) (*User, bool) {
+	u.mu.RLock()
+	defer u.mu.RUnlock()
+	for v := range u.UsersDB {
+		if u.UsersDB[v].ID == ID {
+			return &u.UsersDB[v], true
+		}
+	}
+	return nil, false
+
+}
+
 func (u *Users) GetName(ID int) (string, bool) {
 	u.mu.RLock()
 	defer u.mu.RUnlock()
