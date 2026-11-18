@@ -32,7 +32,13 @@ func HandleUserLogin(u *repo.Users) grouter.HandlerFunc {
 			return
 		}
 
-		if user.Password != LoginReq.Password {
+		// password comparison
+		same, err := utils.VerifyPassword(LoginReq.Password, user.Password)
+		if err != nil {
+			grouter.DisplayInternalServerError(w)
+			return
+		}
+		if !same {
 			grouter.DisplayStatus(w, grouter.DisplayStatusConfig{
 				Code:       http.StatusUnauthorized,
 				Title:      fmt.Sprintf("status %d", http.StatusUnauthorized),
@@ -42,6 +48,7 @@ func HandleUserLogin(u *repo.Users) grouter.HandlerFunc {
 			return
 		}
 
+		// some confirmation responses
 		returning := struct {
 			Username string `json:"username"`
 			Id       int    `json:"id"`

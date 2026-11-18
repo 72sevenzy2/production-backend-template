@@ -24,7 +24,13 @@ func HandleAuthCreateUser(u *repo.Users) grouter.HandlerFunc {
 			return
 		}
 
-		if ok := u.AddUser(regReq.Username, regReq.Password, regReq.ID, 0, 0); !ok {
+		hashedPass, err := utils.HashPassword(regReq.Password)
+		if err != nil {
+			grouter.DisplayInternalServerError(w)
+			return
+		}
+
+		if ok := u.AddUser(regReq.Username, hashedPass, regReq.ID, 0, 0); !ok {
 			grouter.DisplayStatus(w, grouter.DisplayStatusConfig{
 				Code:       http.StatusInternalServerError,
 				Title:      http.StatusText(http.StatusInternalServerError),
