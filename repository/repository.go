@@ -34,7 +34,15 @@ func (u *Users) GetUser(ID int) (*User, bool) {
 		}
 	}
 	return nil, false
+}
 
+func (u *Users) getName(ID int) (string, bool) {
+	for v := range u.UsersDB {
+		if u.UsersDB[v].ID == ID {
+			return u.UsersDB[v].Username, true
+		}
+	}
+	return "", false
 }
 
 func (u *Users) GetName(ID int) (string, bool) {
@@ -88,7 +96,7 @@ func (u *Users) AddUser(name, pass string, ID, followers, following int) bool {
 	u.mu.Lock()
 	defer u.mu.Unlock()
 
-	if _, ok := u.GetName(ID); ok {
+	if _, ok := u.getName(ID); ok {
 		return false
 	}
 
