@@ -18,7 +18,11 @@ func HandleCreateUser(u *repo.Users) grouter.HandlerFunc {
 			return
 		}
 
+		if ok := u.AddUser(user.Username, user.ID, user.Followers, user.Following); !ok {
+			grouter.DisplayInternalServerError(w)
+			return
+		}
 		w.WriteHeader(http.StatusCreated)
-		u.AddUser(user.Username, user.ID, user.Followers, user.Following)
+
 	}
 }

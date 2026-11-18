@@ -28,7 +28,7 @@ func HandleDeleteUser(u *repo.Users) grouter.HandlerFunc {
 			return
 		}
 
-		w.WriteHeader(http.StatusOK)
 		u.DeleteUser(param2)
+		w.WriteHeader(http.StatusCreated)
 	}
 }
