@@ -2,6 +2,7 @@ package benchmarks
 
 import (
 	"bytes"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -24,14 +25,14 @@ func BenchmarkCreateUser(b *testing.B) {
 	for b.Loop() {
 		data = data[:0]
 
-		data = []byte(`
+		data = []byte(fmt.Sprintf(`
 		{
-			"id": 10,
+			"id": %d,
 			"followers": 31,
 			"following": 31,
 			"username": "test"
 		}
-		`)
+		`, b.N))
 
 		req := httptest.NewRequest(http.MethodPost, "/api/createuser/12", bytes.NewReader(data))
 		rr := httptest.NewRecorder()
