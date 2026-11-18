@@ -16,14 +16,10 @@ import (
 func main() {
 	r := grouter.NewGrouter()
 
-	r.Use(grouter.Recoverer())
-	globalLimiter := grouter.NewLimiter(20, 1)
-	r.Use(globalLimiter.RateLimiter())       // global rate limiting
-	r.Use(grouter.Timeout(time.Second * 10)) // global 10 second timeout.
-
+	healthLimiter := grouter.NewLimiter(50, 1)
 	r.Get("health", func(w http.ResponseWriter, r *grouter.Request) {
 		w.Write([]byte("server fully operational."))
-	}, grouter.Logger(0))
+	}, grouter.Recoverer(), grouter.Logger(0), healthLimiter.RateLimiter())
 
 	// API
 
@@ -39,6 +35,10 @@ func main() {
 
 	api := r.Group("api")
 
+	api.Use(grouter.Recoverer())
+	globalLimiter := grouter.NewLimiter(20, 1)
+	r.Use(globalLimiter.RateLimiter())       // global rate limiting
+	r.Use(grouter.Timeout(time.Second * 10)) // global 10 second timeout.
 	api.Post("users/createuser",
 		handlers.HandleCreateUser(users),
 		grouter.Timeout(time.Second*5), grouter.Logger(0)) // 5 second safe-gaurd and logger.
@@ -57,6 +57,13 @@ func main() {
 		handlers.HandleEditUser(users, cache),
 		grouter.BearerAuth(secretToken2),
 		grouter.Logger(0))
+
+	// few authenticated endpoints (creating users and logging in).
+
+	// authLimiter := grouter.NewLimiter(5, 1)
+	//
+	// auth := api.Group("auth") // this now becomes api/auth/..
+	// auth.Post("login",.., authLimiter.RateLimiter())
 
 	srv := &http.Server{
 		Addr:              ":9000",
