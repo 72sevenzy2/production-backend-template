@@ -7,6 +7,7 @@ import (
 // an mimic database for storing users, with O(n) lookup times to mimic an heavy db query.
 
 type UserData interface {
+	GetID() int
 	GetName() string
 	GetHashedPassword() string
 	GetFollowers() int
@@ -24,6 +25,10 @@ type User struct {
 // GetName, GetFollowers, GetFollowing. and GetHashedPassword implement the UserData interface.
 func (u *User) GetName() string {
 	return u.Username
+}
+
+func (u *User) GetID() int {
+	return u.ID
 }
 
 func (u *User) GetHashedPassword() string {

@@ -30,7 +30,7 @@ func main() {
 			return "", false
 		}
 		val, ok := users.GetUser(id)
-		return val.Username, ok
+		return val.GetName(), ok
 	}, utils.NewSingleFlight[string, string](), time.Minute*5)
 
 	api := r.Group("api")

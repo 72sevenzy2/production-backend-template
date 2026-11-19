@@ -33,7 +33,7 @@ func HandleUserLogin(u *repo.Users) grouter.HandlerFunc {
 		}
 
 		// password comparison
-		same, err := utils.VerifyPassword(LoginReq.Password, user.Password)
+		same, err := utils.VerifyPassword(LoginReq.Password, user.GetHashedPassword())
 		if err != nil {
 			grouter.DisplayInternalServerError(w)
 			return
@@ -53,8 +53,8 @@ func HandleUserLogin(u *repo.Users) grouter.HandlerFunc {
 			Username string `json:"username"`
 			Id       int    `json:"id"`
 		}{
-			Username: user.Username,
-			Id:       user.ID,
+			Username: user.GetName(),
+			Id:       user.GetID(),
 		}
 
 		w.WriteHeader(http.StatusOK)
