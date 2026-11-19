@@ -29,8 +29,8 @@ func main() {
 		if err != nil {
 			return "", false
 		}
-		val, ok := users.GetName(id)
-		return val, ok
+		val, ok := users.GetUser(id)
+		return val.Username, ok
 	}, utils.NewSingleFlight[string, string](), time.Minute*5)
 
 	api := r.Group("api")

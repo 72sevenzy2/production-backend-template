@@ -23,8 +23,8 @@ func BenchmarkGetUser(b *testing.B) {
 		if err != nil {
 			return "", false
 		}
-		val, ok := u.GetName(id)
-		return val, ok
+		val, ok := u.GetUser(id)
+		return val.Username, ok
 
 	}, utils.NewSingleFlight[string, string](), time.Minute*5)
 	constructedUser := repo.NewUser(10, 10, 10, "testName", "")

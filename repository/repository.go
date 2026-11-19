@@ -55,13 +55,6 @@ func (u *Users) getName(ID int) (string, bool) {
 	return "", false
 }
 
-func (u *Users) GetName(ID int) (string, bool) {
-	u.mu.RLock()
-	defer u.mu.RUnlock()
-	u.getName(ID)
-	return "", false
-}
-
 func (u *Users) DeleteUser(ID int) {
 	for v := range u.UsersDB {
 		if u.UsersDB[v].ID == ID {
@@ -102,7 +95,7 @@ func (u *Users) AddUser(user User) bool {
 	u.mu.Lock()
 	defer u.mu.Unlock()
 
-	if _, ok := u.getName(user.ID); !ok {
+	if _, ok := u.getName(user.ID); ok {
 		return false
 	}
 
