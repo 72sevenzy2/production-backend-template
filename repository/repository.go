@@ -67,31 +67,34 @@ func NewUsers() *Users {
 func (u *Users) GetUser(ID int) (UserData, bool) {
 	u.mu.RLock()
 	defer u.mu.RUnlock()
-	for v := range u.UsersDB {
-		if u.UsersDB[v].ID == ID {
+	for _, user := range u.UsersDB {
+		if user.ID == ID {
 			// returning a snapshot of User to avoid data races.
-			user := u.UsersDB[v]
-			return &user, true
+			copiedUser := user
+			return &copiedUser, true
 		}
 	}
 	return nil, false
 }
 
 func (u *Users) getName(ID int) (string, bool) {
-	for v := range u.UsersDB {
-		if u.UsersDB[v].ID == ID {
-			return u.UsersDB[v].Username, true
+	for _, user := range u.UsersDB {
+		if user.ID == ID {
+			return user.GetName(), true
 		}
 	}
 	return "", false
 }
 
 func (u *Users) DeleteUser(ID int) {
-	for v := range u.UsersDB {
-		if u.UsersDB[v].ID == ID {
+	u.mu.Lock()
+	defer u.mu.Unlock()
+
+	for i, user := range u.UsersDB {
+		if user.ID == ID {
 			u.UsersDB = append(
-				u.UsersDB[:v],
-				u.UsersDB[v+1:]...,
+				u.UsersDB[:i],
+				u.UsersDB[i+1:]...,
 			)
 			return
 		}
@@ -108,9 +111,9 @@ type EditUserConfig struct {
 func (u *Users) EditUser(conf *EditUserConfig) bool {
 	u.mu.Lock()
 	defer u.mu.Unlock()
-	for v := range u.UsersDB {
-		if u.UsersDB[v].ID == conf.ID {
-			u.UsersDB[v] = User{
+	for _, user := range u.UsersDB {
+		if user.ID == conf.ID {
+			user = User{
 				ID:        conf.ID, // preseve user id
 				Username:  conf.Username,
 				Followers: conf.Followers,
