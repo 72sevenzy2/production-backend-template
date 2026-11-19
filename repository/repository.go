@@ -14,6 +14,16 @@ type User struct {
 	Following int    `json:"following"`
 }
 
+func NewUser(id, following, followers int, username, password string) *User {
+	return &User{
+		ID:        id,
+		Username:  username,
+		Password:  password,
+		Followers: followers,
+		Following: following,
+	}
+}
+
 type Users struct {
 	mu      sync.RWMutex
 	UsersDB []User
@@ -88,20 +98,12 @@ func (u *Users) EditUser(ID int, conf *EditUserConfig) bool {
 	return false
 }
 
-func (u *Users) AddUser(name, pass string, ID, followers, following int) bool {
+func (u *Users) AddUser(user User) bool {
 	u.mu.Lock()
 	defer u.mu.Unlock()
 
-	if _, ok := u.getName(ID); !ok {
+	if _, ok := u.getName(user.ID); !ok {
 		return false
-	}
-
-	user := User{
-		ID:        ID,
-		Password:  pass,
-		Username:  name,
-		Followers: followers,
-		Following: following,
 	}
 
 	u.UsersDB = append(u.UsersDB, user)

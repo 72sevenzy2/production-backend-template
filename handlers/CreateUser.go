@@ -19,7 +19,9 @@ func HandleCreateUser(u *repo.Users) grouter.HandlerFunc {
 			return
 		}
 
-		if ok := u.AddUser(user.Username, "", user.ID, user.Followers, user.Following); !ok {
+		constructedUser := repo.NewUser(user.ID, user.Following, user.Followers, user.Username, user.Password)
+
+		if ok := u.AddUser(*constructedUser); !ok {
 			grouter.DisplayStatus(w, grouter.DisplayStatusConfig{
 				Code:       http.StatusInternalServerError,
 				Title:      http.StatusText(http.StatusInternalServerError),

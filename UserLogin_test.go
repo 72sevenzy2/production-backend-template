@@ -20,7 +20,10 @@ func TestUserLogin(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	users.AddUser("test", hashed, 10, 0, 0) // pre-initialisation for test user credentials
+
+	u := repo.NewUser(10, 0, 0, "test", hashed)
+
+	users.AddUser(*u) // pre-initialisation for test user credentials
 	r.Post("loginuser", handlers.HandleUserLogin(users))
 
 	data := []byte(`
