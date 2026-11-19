@@ -8,13 +8,13 @@ import (
 
 	"github.com/72sevenzy2/grouter/grouter"
 	handlers "github.com/72sevenzy2/production-backend-template/handlers"
-	"github.com/72sevenzy2/production-backend-template/repository"
+	repo "github.com/72sevenzy2/production-backend-template/repository"
 )
 
 func TestCreateUserWithAuth(t *testing.T) {
 	r := grouter.NewGrouter()
 
-	users := repository.NewUsers()
+	users := repo.NewUsers()
 	r.Post("createUser", handlers.HandleAuthCreateUser(users))
 
 	data := []byte(`
