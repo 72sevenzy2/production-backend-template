@@ -16,7 +16,7 @@ func BenchmarkDeleteUser(b *testing.B) {
 
 	u := repo.NewUsers()
 
-	constructedUser := repo.NewUser(10, 10, 10, "testName", "")
+	constructedUser := repo.NewUser(10, 10, 10, "testName", "", "", 0)
 	u.AddUser(*constructedUser)
 	handler.Del("api/deleteuser/:id", handlers.HandleDeleteUser(u))
 
@@ -33,7 +33,7 @@ func BenchmarkDeleteUser(b *testing.B) {
 		}
 
 		b.StopTimer()
-		u.AddUser(*repo.NewUser(10, 10, 10, "test", ""))
+		u.AddUser(*repo.NewUser(10, 10, 10, "test", "", "", 0))
 		b.StartTimer()
 	}
 }

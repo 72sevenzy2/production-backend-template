@@ -19,7 +19,7 @@ func TestEditUser(t *testing.T) {
 	r := grouter.NewGrouter()
 
 	users := repo.NewUsers()
-	user := repo.NewUser(123, 0, 0, "test", "")
+	user := repo.NewUser(123, 0, 0, "test", "", "", 0)
 	users.AddUser(*user)
 
 	cache := repo.NewCache[string](func(s string) (string, bool) {

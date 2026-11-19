@@ -19,7 +19,7 @@ func HandleCreateUser(u *repo.Users) grouter.HandlerFunc {
 			return
 		}
 
-		constructedUser := repo.NewUser(user.ID, user.Following, user.Followers, user.Username, user.Password)
+		constructedUser := repo.NewUser(user.ID, user.Following, user.Followers, user.Username, user.Password, "", 0)
 
 		if ok := u.AddUser(*constructedUser); !ok {
 			grouter.DisplayStatus(w, grouter.DisplayStatusConfig{

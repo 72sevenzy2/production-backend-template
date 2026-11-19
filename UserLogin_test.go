@@ -21,7 +21,7 @@ func TestUserLogin(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	u := repo.NewUser(10, 0, 0, "test", hashed)
+	u := repo.NewUser(10, 0, 0, "test", hashed, "", 0)
 
 	users.AddUser(*u) // pre-initialisation for test user credentials
 	r.Post("loginuser", handlers.HandleUserLogin(users))

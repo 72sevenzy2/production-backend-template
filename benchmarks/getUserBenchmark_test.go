@@ -27,7 +27,7 @@ func BenchmarkGetUser(b *testing.B) {
 		return val.GetName(), ok
 
 	}, utils.NewSingleFlight[string, string](), time.Minute*5)
-	constructedUser := repo.NewUser(10, 10, 10, "testName", "")
+	constructedUser := repo.NewUser(10, 10, 10, "testName", "", "", 0)
 	u.AddUser(*constructedUser)
 	handler.Get("api/getuser/:id", handlers.HandleGetUsername(u, cache, utils.NewSingleFlight[string, string]()))
 

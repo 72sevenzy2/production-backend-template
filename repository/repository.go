@@ -2,6 +2,7 @@ package repository
 
 import (
 	"sync"
+	"time"
 )
 
 // an mimic database for storing users, with O(n) lookup times to mimic an heavy db query.
@@ -20,11 +21,22 @@ type User struct {
 	Password  string `json:"password"`
 	Followers int    `json:"followers"`
 	Following int    `json:"following"`
+
+	ExpiresAt time.Duration
+	SessionID string `json:"sessionid"`
 }
 
-// GetName, GetFollowers, GetFollowing. and GetHashedPassword implement the UserData interface.
+// all the following getters implement the UserData interface.
 func (u *User) GetName() string {
 	return u.Username
+}
+
+func (u *User) GetSessionIDExpiration() time.Duration {
+	return u.ExpiresAt
+}
+
+func (u *User) GetSessionID() string {
+	return u.SessionID
 }
 
 func (u *User) GetID() int {
@@ -43,13 +55,14 @@ func (u *User) GetFollowing() int {
 	return u.Following
 }
 
-func NewUser(id, following, followers int, username, password string) *User {
+func NewUser(id, following, followers int, username, password, sID string, expiresAt time.Duration) *User {
 	return &User{
 		ID:        id,
 		Username:  username,
 		Password:  password,
 		Followers: followers,
 		Following: following,
+		SessionID: sID,
 	}
 }
 

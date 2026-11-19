@@ -29,7 +29,7 @@ func BenchmarkEditUser(b *testing.B) {
 		return val.GetName(), ok
 
 	}, utils.NewSingleFlight[string, string](), time.Minute*5)
-	constructedUser := repo.NewUser(10, 10, 10, "testName", "")
+	constructedUser := repo.NewUser(10, 10, 10, "testName", "", "", 0)
 	u.AddUser(*constructedUser)
 	handler.Put("api/edituser/:id", handlers.HandleEditUser(u, cache))
 
