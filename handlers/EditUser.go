@@ -36,8 +36,9 @@ func HandleEditUser(u *repo.Users, cache *repo.Cache[string]) grouter.HandlerFun
 			grouter.DisplayInternalServerError(w)
 			return
 		}
+		UserEditConf.ID = param2
 
-		ok2 := u.EditUser(param2, &UserEditConf)
+		ok2 := u.EditUser(&UserEditConf)
 		if !ok2 {
 			grouter.DisplayStatus(w, grouter.DisplayStatusConfig{
 				Code:       http.StatusFailedDependency,

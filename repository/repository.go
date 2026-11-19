@@ -100,17 +100,18 @@ func (u *Users) DeleteUser(ID int) {
 
 type EditUserConfig struct {
 	Username  string `json:"username"`
+	ID        int    `json:"id"`
 	Followers int    `json:"followers"`
 	Following int    `json:"following"`
 }
 
-func (u *Users) EditUser(ID int, conf *EditUserConfig) bool {
+func (u *Users) EditUser(conf *EditUserConfig) bool {
 	u.mu.Lock()
 	defer u.mu.Unlock()
 	for v := range u.UsersDB {
-		if u.UsersDB[v].ID == ID {
+		if u.UsersDB[v].ID == conf.ID {
 			u.UsersDB[v] = User{
-				ID:        ID, // preseve user id
+				ID:        conf.ID, // preseve user id
 				Username:  conf.Username,
 				Followers: conf.Followers,
 				Following: conf.Following,
