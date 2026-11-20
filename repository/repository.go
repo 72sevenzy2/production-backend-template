@@ -15,7 +15,7 @@ type UserInstantiator interface {
 	SetID(int)
 }
 
-// union type for both UserInstantiator, and UserData
+// intersection type for both UserInstantiator, and UserData
 type UserType interface {
 	UserInstantiator
 	UserData
