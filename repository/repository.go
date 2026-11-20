@@ -7,28 +7,6 @@ import (
 
 // an mimic database for storing users, with O(n) lookup times to mimic an heavy db query.
 
-type UserInstantiator interface {
-	SetSessionID(string)
-	SetUsername(string)
-	SetFollowers(int)
-	SetFollowing(int)
-	SetID(int)
-}
-
-// intersection type for both UserInstantiator, and UserData
-type UserType interface {
-	UserInstantiator
-	UserData
-}
-
-type UserData interface {
-	GetID() int
-	GetName() string
-	GetHashedPassword() string
-	GetFollowers() int
-	GetFollowing() int
-}
-
 type User struct {
 	ID        int    `json:"id"`
 	Username  string `json:"username"`
@@ -109,7 +87,7 @@ func NewUsers() *Users {
 	}
 }
 
-func (u *Users) GetUser(ID int) (UserType, bool) {
+func (u *Users) GetUser(ID int) (*User, bool) {
 	u.mu.RLock()
 	defer u.mu.RUnlock()
 	for _, user := range u.UsersDB {
