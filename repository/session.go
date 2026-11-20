@@ -63,6 +63,8 @@ func (s *Sessions) Get(sessionID string) (Session, error) {
 	}
 
 	if !session.ExpiresAt.After(time.Now()) {
+		// lazy eviction
+		s.Delete(sessionID)
 		return Session{}, utils.ErrSessionExpired
 	}
 
