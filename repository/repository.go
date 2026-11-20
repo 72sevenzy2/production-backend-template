@@ -13,13 +13,6 @@ type User struct {
 	Password  string `json:"password"`
 	Followers int    `json:"followers"`
 	Following int    `json:"following"`
-
-	ExpiresAt time.Duration
-	SessionID string `json:"sessionid"`
-}
-
-func (u *User) SetSessionID(id string) {
-	u.SessionID = id
 }
 
 func (u *User) SetID(id int) {
@@ -39,14 +32,6 @@ func (u *User) SetFollowing(n int) {
 // all the following getters implement the UserData interface.
 func (u *User) GetName() string {
 	return u.Username
-}
-
-func (u *User) GetSessionIDExpiration() time.Duration {
-	return u.ExpiresAt
-}
-
-func (u *User) GetSessionID() string {
-	return u.SessionID
 }
 
 func (u *User) GetID() int {
@@ -72,7 +57,6 @@ func NewUser(id, following, followers int, username, password, sID string, expir
 		Password:  password,
 		Followers: followers,
 		Following: following,
-		SessionID: sID,
 	}
 }
 
