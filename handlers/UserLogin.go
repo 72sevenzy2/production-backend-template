@@ -16,7 +16,7 @@ import (
 
 const SESSIONID_EXPIRY_TIME = time.Minute * 10
 
-func HandleUserLogin(u *repo.Users) grouter.HandlerFunc {
+func HandleUserLogin(u *repo.Users, sessions *repo.Sessions) grouter.HandlerFunc {
 	return func(w http.ResponseWriter, r *grouter.Request) {
 		limit_body := io.LimitReader(r.Body, 1024*1024) // 1 MiB
 
@@ -59,8 +59,7 @@ func HandleUserLogin(u *repo.Users) grouter.HandlerFunc {
 			return
 		}
 
-		// assign sID
-		user.SetSessionID(sID)
+		sessions.Create(LoginReq.ID, sID, time.Now().Add(SESSIONID_EXPIRY_TIME))
 
 		// some confirmation responses
 		returning := struct {

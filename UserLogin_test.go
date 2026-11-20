@@ -16,6 +16,7 @@ func TestUserLogin(t *testing.T) {
 	r := grouter.NewGrouter()
 
 	users := repo.NewUsers()
+	sessions := repo.NewSessions()
 	hashed, err := utils.HashPassword("test123")
 	if err != nil {
 		t.Fatal(err)
@@ -24,7 +25,7 @@ func TestUserLogin(t *testing.T) {
 	u := repo.NewUser(10, 0, 0, "test", hashed, "", 0)
 
 	users.AddUser(*u) // pre-initialisation for test user credentials
-	r.Post("loginuser", handlers.HandleUserLogin(users))
+	r.Post("loginuser", handlers.HandleUserLogin(users, sessions))
 
 	data := []byte(`
 	{

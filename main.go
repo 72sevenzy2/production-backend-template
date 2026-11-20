@@ -24,6 +24,7 @@ func main() {
 	// API
 
 	users := repo.NewUsers()
+	session := repo.NewSessions()
 	cache := repo.NewCache[string](func(s string) (string, bool) {
 		id, err := strconv.Atoi(s)
 		if err != nil {
@@ -69,7 +70,7 @@ func main() {
 
 	auth.Post("createuser", handlers.HandleAuthCreateUser(users))
 
-	auth.Post("loginuser", handlers.HandleUserLogin(users))
+	auth.Post("loginuser", handlers.HandleUserLogin(users, session))
 
 	srv := &http.Server{
 		Addr:              ":9000",
