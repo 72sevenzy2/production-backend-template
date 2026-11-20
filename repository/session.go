@@ -47,6 +47,46 @@ func (s *Sessions) Create(userID int, sessionID string, expiry time.Time) error 
 	return nil
 }
 
+func (s *Sessions) Get(sessionID string) (Session, error) {
+	if sessionID == "" {
+		return Session{}, utils.ErrSessionNotFound
+	}
+
+	key := hashSID(sessionID)
+
+	s.mu.RLock()
+	session, ok := s.sessions[key]
+	s.mu.RUnlock()
+
+	if !ok {
+		return Session{}, utils.ErrSessionNotFound
+	}
+
+	if !session.ExpiresAt.After(time.Now()) {
+		return Session{}, utils.ErrSessionExpired
+	}
+
+	return session, nil
+}
+
+func (s *Sessions) Delete(sessionID string) error {
+	if sessionID == "" {
+		return utils.ErrSessionNotFound
+	}
+
+	key := hashSID(sessionID)
+
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if _, ok := s.sessions[key]; !ok {
+		return utils.ErrSessionNotFound
+	}
+
+	delete(s.sessions, key)
+	return nil
+}
+
 func hashSID(sessionID string) string {
 	sum := sha256.Sum256([]byte(sessionID))
 	return hex.EncodeToString(sum[:])
