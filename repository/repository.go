@@ -7,6 +7,20 @@ import (
 
 // an mimic database for storing users, with O(n) lookup times to mimic an heavy db query.
 
+type UserInstantiator interface {
+	SetSessionID(string)
+	SetUsername(string)
+	SetFollowers(int)
+	SetFollowing(int)
+	SetID(int)
+}
+
+// union type for both UserInstantiator, and UserData
+type UserType interface {
+	UserInstantiator
+	UserData
+}
+
 type UserData interface {
 	GetID() int
 	GetName() string
@@ -24,6 +38,24 @@ type User struct {
 
 	ExpiresAt time.Duration
 	SessionID string `json:"sessionid"`
+}
+
+func (u *User) SetSessionID(id string) {
+	u.SessionID = id
+}
+
+func (u *User) SetID(id int) {
+	u.ID = id
+}
+func (u *User) SetUsername(name string) {
+	u.Username = name
+}
+
+func (u *User) SetFollowers(n int) {
+	u.Followers = n
+}
+func (u *User) SetFollowing(n int) {
+	u.Following = n
 }
 
 // all the following getters implement the UserData interface.
@@ -77,7 +109,7 @@ func NewUsers() *Users {
 	}
 }
 
-func (u *Users) GetUser(ID int) (UserData, bool) {
+func (u *Users) GetUser(ID int) (UserType, bool) {
 	u.mu.RLock()
 	defer u.mu.RUnlock()
 	for _, user := range u.UsersDB {
