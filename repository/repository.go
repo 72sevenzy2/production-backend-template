@@ -15,41 +15,6 @@ type User struct {
 	Following int    `json:"following"`
 }
 
-func (u *User) SetID(id int) {
-	u.ID = id
-}
-func (u *User) SetUsername(name string) {
-	u.Username = name
-}
-
-func (u *User) SetFollowers(n int) {
-	u.Followers = n
-}
-func (u *User) SetFollowing(n int) {
-	u.Following = n
-}
-
-// all the following getters implement the UserData interface.
-func (u *User) GetName() string {
-	return u.Username
-}
-
-func (u *User) GetID() int {
-	return u.ID
-}
-
-func (u *User) GetHashedPassword() string {
-	return u.Password
-}
-
-func (u *User) GetFollowers() int {
-	return u.Followers
-}
-
-func (u *User) GetFollowing() int {
-	return u.Following
-}
-
 func NewUser(id, following, followers int, username, password, sID string, expiresAt time.Duration) *User {
 	return &User{
 		ID:        id,
@@ -144,4 +109,39 @@ func (u *Users) AddUser(user User) bool {
 	u.UsersDB = append(u.UsersDB, user)
 
 	return true
+}
+
+func (u *User) SetID(id int) {
+	u.ID = id
+}
+func (u *User) SetUsername(name string) {
+	u.Username = name
+}
+
+func (u *User) SetFollowers(n int) {
+	u.Followers = n
+}
+func (u *User) SetFollowing(n int) {
+	u.Following = n
+}
+
+// all the following getters implement the UserData interface.
+func (u *User) GetName() string {
+	return u.Username
+}
+
+func (u *User) GetID() int {
+	return u.ID
+}
+
+func (u *User) GetHashedPassword() string {
+	return u.Password
+}
+
+func (u *User) GetFollowers() int {
+	return u.Followers
+}
+
+func (u *User) GetFollowing() int {
+	return u.Following
 }
