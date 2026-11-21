@@ -16,10 +16,10 @@ import (
 func main() {
 	r := grouter.NewGrouter()
 
-	healthLimiter := grouter.NewLimiter(50, 1)
+	healthLimiter := grouter.NewLimiter(10, 1)
 	r.Get("health", func(w http.ResponseWriter, r *grouter.Request) {
 		w.Write([]byte("server fully operational."))
-	}, grouter.Recoverer(), grouter.Logger(0), healthLimiter.RateLimiter())
+	}, grouter.Recoverer(), grouter.Logger(0), healthLimiter.RateLimiter(100))
 
 	// API
 
@@ -38,7 +38,7 @@ func main() {
 
 	api.Use(grouter.Recoverer())
 	globalLimiter := grouter.NewLimiter(20, 1)
-	r.Use(globalLimiter.RateLimiter())       // global rate limiting
+	r.Use(globalLimiter.RateLimiter(200))    // global rate limiting
 	r.Use(grouter.Timeout(time.Second * 10)) // global 10 second timeout.
 	api.Post("users/createuser",
 		handlers.HandleCreateUser(users),
@@ -46,7 +46,7 @@ func main() {
 
 	sf := utils.NewSingleFlight[string, string]()
 	GetUserRateLimiter := grouter.NewLimiter(50, 1) // allow more requests for read-only route.
-	api.Get("users/getuser/:id", handlers.HandleGetUsername(users, cache, sf), grouter.Logger(0), GetUserRateLimiter.RateLimiter())
+	api.Get("users/getuser/:id", handlers.HandleGetUsername(users, cache, sf), grouter.Logger(0), GetUserRateLimiter.RateLimiter(500))
 
 	secretToken := "abcdefg" // super secret bearer auth token
 	api.Del("users/deleteuser/:id",
@@ -65,7 +65,7 @@ func main() {
 
 	auth := api.Group("auth") // this now becomes api/auth/..
 	auth.Use(grouter.Recoverer())
-	auth.Use(authLimiter.RateLimiter())
+	auth.Use(authLimiter.RateLimiter(150))
 	auth.Use(grouter.Logger(0))
 
 	auth.Post("createuser", handlers.HandleAuthCreateUser(users))
