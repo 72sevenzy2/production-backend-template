@@ -25,6 +25,38 @@ func NewSessions() *Sessions {
 	}
 }
 
+// todo: add periodic cleanup to avoid memory leaks.
+
+func (s *Sessions) cleanup() int {
+	now := time.Now()
+	Ndeleted := 0
+
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	for key, session := range s.sessions {
+		if !session.ExpiresAt.After(now) {
+			delete(s.sessions, key)
+			Ndeleted++
+		}
+	}
+
+	return Ndeleted
+}
+
+func StartCleanup(sessions *Sessions) {
+	ticker := time.NewTicker(time.Minute)
+
+	go func() {
+		for range ticker.C {
+			defer ticker.Stop()
+
+			_ = sessions.cleanup()
+		}
+	}()
+
+}
+
 func (s *Sessions) Create(userID int, sessionID string, expiry time.Time) error {
 	if userID <= 0 || sessionID == "" {
 		return utils.ErrInvalidSessionData

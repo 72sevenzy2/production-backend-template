@@ -59,6 +59,7 @@ func HandleUserLogin(u *repo.Users, sessions *repo.Sessions) grouter.HandlerFunc
 			return
 		}
 
+		repo.StartCleanup(sessions) // periodic cleanup.
 		sessions.Create(LoginReq.ID, sID, time.Now().Add(SESSIONID_EXPIRY_TIME))
 
 		// some confirmation responses
