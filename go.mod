@@ -3,7 +3,7 @@ module github.com/72sevenzy2/production-backend-template
 go 1.27.3
 
 require (
-	github.com/72sevenzy2/grouter v0.0.0-20261121081243-9cc9cb569396
+	github.com/72sevenzy2/grouter v0.0.0-20261124054447-12fad4280819
 	golang.org/x/crypto v0.59.0
 )
 

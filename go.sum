@@ -2,6 +2,8 @@ github.com/72sevenzy2/Grouter-middlewares v0.0.0-20261121053042-4ca551ee537b h1:
 github.com/72sevenzy2/Grouter-middlewares v0.0.0-20261121053042-4ca551ee537b/go.mod h1:Xmmm0tqcIG85pcpawQqz9eCkHuFXtir+BRSmtYFJiQU=
 github.com/72sevenzy2/grouter v0.0.0-20261121081243-9cc9cb569396 h1:Wi7yb2n9neOQes4HPBz82J7re+5vj8VOISO8OzaZk6I=
 github.com/72sevenzy2/grouter v0.0.0-20261121081243-9cc9cb569396/go.mod h1:uCW04H4aGuAg5x9sm2AnpnaFGWvRGCHY69EPbDOxCs0=
+github.com/72sevenzy2/grouter v0.0.0-20261124054447-12fad4280819 h1:XOfPx12w9xmtnoFA74ebS4LoFZfFK7fQ2AIzdYF4UzE=
+github.com/72sevenzy2/grouter v0.0.0-20261124054447-12fad4280819/go.mod h1:uCW04H4aGuAg5x9sm2AnpnaFGWvRGCHY69EPbDOxCs0=
 github.com/72sevenzy2/json-parser v0.0.0-20260913135209-918df9c221ac h1:VfAb+YBf13/GsFEpP+rYMBSn9sKxrqJZVU0FTsVcIUY=
 github.com/72sevenzy2/json-parser v0.0.0-20260913135209-918df9c221ac/go.mod h1:wA/oKrssLUp44rupBrh/cRqQdl3qcLEoES5jK7+VpVg=
 golang.org/x/crypto v0.59.0 h1:xS2jhqYbzNrpvkWP2YTDf4TJwBy3ykR03i8vFDxEc7c=
